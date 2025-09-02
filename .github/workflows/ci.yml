@@ -21,7 +21,8 @@ jobs:
         cache: 'maven'
     
     - name: Build with Maven
-      run: mvn -B package --file backend/pom.xml
-      
+      run: mvn clean install
+      working-directory: backend
+  
     - name: Run Tests
       run: mvn test
