@@ -21,7 +21,7 @@ public class Estabelecimento {
     private String endereco;
     private String categoria;
     private String descricao;
-    private Image imagemPerfil;
+    private String imagemPerfil;
     private String telefone;
     private String googlePlaceId;
 }
