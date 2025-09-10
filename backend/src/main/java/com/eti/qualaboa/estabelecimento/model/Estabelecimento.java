@@ -3,8 +3,6 @@ package com.eti.qualaboa.estabelecimento.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.awt.*;
-
 @Entity
 @Table(name = "estabelecimentos")
 @Getter @Setter
@@ -21,7 +19,7 @@ public class Estabelecimento {
     private String endereco;
     private String categoria;
     private String descricao;
-    private String imagemPerfil;
+    private String imagemPerfil;//url da imagem
     private String telefone;
     private String googlePlaceId;
 }
