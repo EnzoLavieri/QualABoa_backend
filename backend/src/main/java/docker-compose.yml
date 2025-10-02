@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15
+    container_name: qualaboa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: qualaboa
+      POSTGRES_USER: qualaboa_user
+      POSTGRES_PASSWORD: senha123
+    ports:
+      - "5432:5432"
+    volumes:
+      - qualaboa_pgdata:/var/lib/postgresql/data
+
+volumes:
+  qualaboa_pgdata:
