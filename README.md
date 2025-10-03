@@ -1,6 +1,6 @@
 # QualABoa
 **Descrição:**  
-O aplicativo e sistema "QualABoa" tem como objetivo principal gerar um desconto/bonificação/recompensa com base na quantidade de pessoas que o usuário levar ao estabelecimento. O próprio estabelecimento será responsável por gerenciar quantas dessas recompensas estarão disponíveis e qual tipo de benefício será concedido ao usuário, caso ele atinja a quantidade previamente estabelecida.
+O aplicativo e sistema "QualABoa?" tem como objetivo principal trazer aos usuários recomendações personalizadas de eventos e promoções de lugares de seu interesse, assim como vantagens aos estabelecimentos como métricas e divulgação.
 
 ## Tecnologias Utilizadas
 
@@ -12,7 +12,7 @@ O aplicativo e sistema "QualABoa" tem como objetivo principal gerar um desconto/
 
 Antes de baixar e executar o projeto, certifique-se de ter as seguintes ferramentas instaladas:
 
-- **Java** (versão 24 ou superior)
+- **Java** (versão 17 ou superior)
 - **PostgreSQL**
 - **Gerenciador de pacotes como Yarn ou NPM**
 - **docker**?
