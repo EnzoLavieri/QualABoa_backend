@@ -20,7 +20,7 @@ public class EstabelecimentoService {
 
     public EstabelecimentoDTO criar(Estabelecimento estabelecimento) {
         if (repositoryEstabelecimento.existsByEmail(estabelecimento.getEmail())) {
-            throw new RuntimeException("E-mail já cadastrado");
+            throw new RuntimeException("Email ja cadastrado");
         }
         Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
         return toDTO(salvo);
@@ -32,13 +32,13 @@ public class EstabelecimentoService {
 
     public EstabelecimentoDTO buscarPorId(Long id) {
         Estabelecimento est = repositoryEstabelecimento.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Estabelecimento nao encontrado"));
         return toDTO(est);
     }
 
     public EstabelecimentoDTO atualizar(Long id, Estabelecimento dto) {
         Estabelecimento existente = repositoryEstabelecimento.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Estabelecimento nao encontrado"));
 
         existente.setNome(dto.getNome());
         existente.setCategoria(dto.getCategoria());
