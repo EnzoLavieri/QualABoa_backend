@@ -1,6 +1,7 @@
 package com.eti.qualaboa.usuario.dto;
 
 import com.eti.qualaboa.enums.Sexo;
+import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import lombok.Getter;
 import lombok.Setter;
 

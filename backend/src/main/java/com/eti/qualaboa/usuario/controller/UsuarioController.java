@@ -3,6 +3,8 @@ package com.eti.qualaboa.usuario.controller;
 import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import com.eti.qualaboa.usuario.dto.UsuarioRequestDTO;
 import com.eti.qualaboa.usuario.dto.UsuarioResponseDTO;
+import com.eti.qualaboa.usuario.dto.UsuarioUpdateRequestDTO;
+import com.eti.qualaboa.usuario.dto.UsuarioUpdateResponseDTO;
 import com.eti.qualaboa.usuario.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,25 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public  ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id){
         Usuario user = usuarioService.findUserById(id);
 
         UsuarioResponseDTO userResponseDTO = new UsuarioResponseDTO(user.getId(), user.getNome(), user.getEmail(),user.getSexo(),user.getPreferenciasUsuario());
 
         return ResponseEntity.ok(userResponseDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioUpdateResponseDTO> atualizarUsuario(@PathVariable Long id, @RequestBody @Valid UsuarioUpdateRequestDTO requestDTO){
+        UsuarioUpdateResponseDTO userResponseDTO = usuarioService.atualizarUsuario(id,requestDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deletarUsuario(@PathVariable Long id){
+        HttpStatus user = usuarioService.deletarUsuario(id);
+        return  ResponseEntity.noContent().build();
     }
 
 }

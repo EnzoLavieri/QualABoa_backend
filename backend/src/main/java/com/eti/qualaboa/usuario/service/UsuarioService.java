@@ -3,10 +3,13 @@ package com.eti.qualaboa.usuario.service;
 import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import com.eti.qualaboa.usuario.dto.UsuarioRequestDTO;
 import com.eti.qualaboa.usuario.dto.UsuarioResponseDTO;
+import com.eti.qualaboa.usuario.dto.UsuarioUpdateRequestDTO;
+import com.eti.qualaboa.usuario.dto.UsuarioUpdateResponseDTO;
 import com.eti.qualaboa.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,5 +47,30 @@ public class UsuarioService {
         return  repository.findById(userID).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
     }
 
+    @Transactional
+    public UsuarioUpdateResponseDTO atualizarUsuario(Long userID, UsuarioUpdateRequestDTO requestDTO){
+        Usuario user = findUserById(userID);
 
+        if (requestDTO.getNome() != null && !requestDTO.getNome().isBlank()){
+            user.setNome(requestDTO.getNome());
+        } else {
+            throw new RuntimeException("Preencha o campo nome");
+        }
+
+        if (requestDTO.getPreferenciasUsuario() != null) {
+            user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
+        }
+
+        Usuario userAtualizado = repository.save(user);
+
+        return new UsuarioUpdateResponseDTO(userAtualizado);
+
+    }
+
+    @Transactional
+    public HttpStatus deletarUsuario(Long userID){
+        Usuario user = findUserById(userID);
+        repository.delete(user);
+        return HttpStatus.NO_CONTENT;
+    }
 }
