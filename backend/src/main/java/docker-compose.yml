@@ -1,8 +1,10 @@
+version: '3.8'
+
 services:
-  db:
+  postgres:
     image: postgres:15
-    container_name: qualaboa-postgres
-    restart: unless-stopped
+    container_name: postgres_qualaboa
+    restart: always
     environment:
       POSTGRES_DB: qualaboa
       POSTGRES_USER: qualaboa_user
@@ -10,7 +12,19 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - qualaboa_pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_qualaboa
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@qualaboa.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
 
 volumes:
-  qualaboa_pgdata:
+  pgdata:
