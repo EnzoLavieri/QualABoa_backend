@@ -30,7 +30,7 @@ public class Estabelecimento {
     private String telefone;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_endereco")
+    @JoinColumn(name = "idEndereco")
     @JsonManagedReference
     private Endereco endereco;
 
@@ -39,9 +39,16 @@ public class Estabelecimento {
     private byte[] imagemPerfil;
 
     private Double classificacao;
-    private String conveniencias;
 
-    //Relacionamentos com Evento e Cupom
+    @ElementCollection
+    @CollectionTable(
+            name = "estabelecimentoConveniencias",
+            joinColumns = @JoinColumn(name = "idEstabelecimento")
+    )
+    @Column(name = "conveniencia")
+    private List<String> conveniencias;
+
+    //relacionamentos com evento e cupom
     @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Evento> eventos;
