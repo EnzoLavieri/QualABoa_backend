@@ -1,6 +1,7 @@
 package com.eti.qualaboa.usuario.dto;
 
 import com.eti.qualaboa.enums.Sexo;
+import com.eti.qualaboa.usuario.domain.entity.Role;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @ToString
@@ -26,6 +28,8 @@ public class UsuarioRequestDTO {
 
     @NotNull(message = "O sexo é obrigatório.")
     private Sexo sexo;
+
+    private Long idRole;
 
     private List<String> preferenciasUsuario;
 }
