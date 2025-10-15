@@ -1,13 +1,17 @@
 package com.eti.qualaboa.estabelecimento.model;
 
 import com.eti.qualaboa.endereco.Endereco;
+import com.eti.qualaboa.evento.model.Evento;
+import com.eti.qualaboa.cupom.model.Cupom;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
-@Table(name = "Estabelecimento")
+@Table(name = "estabelecimentos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +25,7 @@ public class Estabelecimento {
     private String nome;
     private String senha;
     private String email;
-    private String categoria;//bar, restaurante, etc
+    private String categoria;
     private String descricao;
     private String telefone;
 
@@ -30,12 +34,28 @@ public class Estabelecimento {
     @JsonManagedReference
     private Endereco endereco;
 
-
     @Lob
     @JsonIgnore
-    private byte[] imagemPerfil;//tentar resolver problema
+    private byte[] imagemPerfil;
 
     private Double classificacao;
-    private String conveniencias;//wifi,ar condicionado, etc
+
+    @ElementCollection
+    @CollectionTable(
+            name = "estabelecimentoConveniencias",
+            joinColumns = @JoinColumn(name = "idEstabelecimento")
+    )
+    @Column(name = "conveniencia")
+    private List<String> conveniencias;
+
+    //relacionamentos com evento e cupom
+    @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Evento> eventos;
+
+    @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Cupom> cupons;
 }
+
 

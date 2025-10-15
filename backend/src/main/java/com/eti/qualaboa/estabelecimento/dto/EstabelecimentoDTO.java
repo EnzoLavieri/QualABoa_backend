@@ -2,6 +2,7 @@ package com.eti.qualaboa.estabelecimento.dto;
 
 import com.eti.qualaboa.endereco.Endereco;
 import lombok.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,6 @@ public class EstabelecimentoDTO {
     private String telefone;
     private Endereco endereco;
     private Double classificacao;
-    private String conveniencias;
+    private List<String> conveniencias;
 }
 
