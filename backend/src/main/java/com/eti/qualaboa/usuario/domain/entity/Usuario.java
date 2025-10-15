@@ -1,12 +1,15 @@
 package com.eti.qualaboa.usuario.domain.entity;
 
+import com.eti.qualaboa.config.dto.LoginRequest;
 import com.eti.qualaboa.enums.Sexo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "usuarios")
@@ -17,6 +20,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "usuario_id")
     private Long id;
 
     private String nome;
@@ -24,10 +28,21 @@ public class Usuario {
     private String senha;
     private Sexo sexo;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "tb_users_roles",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="usuario_preferencias", joinColumns=@JoinColumn(name="usuario_id"))
     private List<String> preferenciasUsuario;
+
+    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(loginRequest.password(), this.senha);
+    }
     //private ArrayList<Estabelecimento> estabelecimentosFavoritos;
     // falta checkins e avaliações
     // falta imagens
