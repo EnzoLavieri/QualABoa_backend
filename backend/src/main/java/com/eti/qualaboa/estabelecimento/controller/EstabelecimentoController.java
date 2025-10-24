@@ -1,6 +1,8 @@
 package com.eti.qualaboa.estabelecimento.controller;
 
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,8 @@ public class EstabelecimentoController {
     }
 
     @PostMapping
-    public ResponseEntity<EstabelecimentoDTO> criar(@RequestBody Estabelecimento estabelecimento) {
-        EstabelecimentoDTO salvo = serviceEstabelecimento.criar(estabelecimento);
+    public ResponseEntity<EstabelecimentoResponseDTO> criar(@RequestBody EstabelecimentoRegisterDTO estabelecimento) {
+        EstabelecimentoResponseDTO salvo = serviceEstabelecimento.criar(estabelecimento);
         return ResponseEntity.created(URI.create("/estabelecimento/" + salvo.getIdEstabelecimento())).body(salvo);
     }
 

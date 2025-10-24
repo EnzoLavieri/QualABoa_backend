@@ -1,14 +1,18 @@
 package com.eti.qualaboa.estabelecimento.model;
 
+import com.eti.qualaboa.config.dto.LoginRequest;
 import com.eti.qualaboa.endereco.Endereco;
 import com.eti.qualaboa.evento.model.Evento;
 import com.eti.qualaboa.cupom.model.Cupom;
+import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "estabelecimentos")
@@ -56,6 +60,22 @@ public class Estabelecimento {
     @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Cupom> cupons;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "estabelecimento_roles",
+            joinColumns = @JoinColumn(name = "id_estabelecimento"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
+
+    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(loginRequest.password(), this.senha);
+    }
+
+    public Object getId() {
+        return  this.getIdEstabelecimento();
+    }
 }
 
 

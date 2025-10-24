@@ -37,7 +37,9 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST , "/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST , "/auth/login/estabelecimento").permitAll()
                 .requestMatchers(HttpMethod.POST , "/api/usuarios").permitAll()
+                .requestMatchers(HttpMethod.POST, "/estabelecimento").permitAll()
                 .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))

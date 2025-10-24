@@ -2,28 +2,68 @@ package com.eti.qualaboa.estabelecimento.service;
 
 import com.eti.qualaboa.endereco.Endereco;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
+import com.eti.qualaboa.usuario.domain.entity.Role;
+import com.eti.qualaboa.usuario.repository.RoleRepository;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class EstabelecimentoService {
 
     private final EstabelecimentoRepository repositoryEstabelecimento;
+    private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento) {
+    public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
         this.repositoryEstabelecimento = repositoryEstabelecimento;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public EstabelecimentoDTO criar(Estabelecimento estabelecimento) {
-        if (repositoryEstabelecimento.existsByEmail(estabelecimento.getEmail())) {
+    public EstabelecimentoResponseDTO criar(EstabelecimentoRegisterDTO estabelecimentoRequest) {
+        if (repositoryEstabelecimento.existsByEmail(estabelecimentoRequest.getEmail())) {
             throw new RuntimeException("E-mail já cadastrado");
         }
+
+        Estabelecimento estabelecimento = new Estabelecimento();
+
+        estabelecimento.setNome(estabelecimentoRequest.getNome());
+        estabelecimento.setEmail(estabelecimentoRequest.getEmail());
+        estabelecimento.setSenha(passwordEncoder.encode(estabelecimentoRequest.getSenha()));
+        estabelecimento.setCategoria(estabelecimentoRequest.getCategoria());
+        estabelecimento.setDescricao(estabelecimentoRequest.getDescricao());
+        estabelecimento.setTelefone(estabelecimentoRequest.getTelefone());
+        estabelecimento.setEndereco(estabelecimentoRequest.getEndereco());
+        estabelecimento.setConveniencias(estabelecimentoRequest.getConveniencias());
+
+        if (estabelecimentoRequest.getIdRole() == 3){
+            Role role = roleRepository.findByNome("ESTABELECIMENTO");
+            estabelecimento.setRoles(Set.of(role));
+        }
+
         Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
-        return toDTO(salvo);
+        return new EstabelecimentoResponseDTO(
+                salvo.getIdEstabelecimento(),
+                salvo.getNome(),
+                salvo.getEmail(),
+                salvo.getCategoria(),
+                salvo.getDescricao(),
+                salvo.getTelefone(),
+                salvo.getEndereco(),
+                salvo.getClassificacao(),
+                salvo.getConveniencias()
+        );
     }
 
     public List<EstabelecimentoDTO> listarTodos() {
