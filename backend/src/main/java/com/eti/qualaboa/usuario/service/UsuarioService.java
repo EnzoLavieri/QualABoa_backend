@@ -1,5 +1,8 @@
 package com.eti.qualaboa.usuario.service;
 
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
+import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
+import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import com.eti.qualaboa.usuario.dto.UsuarioRequestDTO;
@@ -27,6 +30,7 @@ public class UsuarioService {
     private final UsuarioRepository repository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final EstabelecimentoService estabelecimentoService;
 
     @Transactional
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO requestDTO){
@@ -38,10 +42,10 @@ public class UsuarioService {
         user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
         log.info("Iniciando processo de criação de usuário para o DTO: {}",requestDTO.getIdRole());
         if (requestDTO.getIdRole() == 2) {
-            Role roleUser = roleRepository.findByNome("ADMIN");
+            Role roleUser = roleRepository.findByNome("ADMIN").orElseThrow(() -> new RuntimeException("Role ADMIN não encontrada"));
             user.setRoles(Set.of(roleUser));
-        } else {
-            Role roleUser = roleRepository.findByNome("USER");
+        } else if (requestDTO.getIdRole() == 1){
+            Role roleUser = roleRepository.findByNome("USER").orElseThrow(() -> new RuntimeException("Role USER não encontrada"));
             user.setRoles(Set.of(roleUser));
         }
 
@@ -80,6 +84,24 @@ public class UsuarioService {
 
         return new UsuarioUpdateResponseDTO(userAtualizado);
 
+    }
+
+    @Transactional
+    public HttpStatus favoritarEstabelecimento(Long userID, Long estabelecimentoID){
+        Usuario user = findUserById(userID);
+        Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
+        user.getFavoritos().add(estabelecimento);
+        repository.save(user);
+        return HttpStatus.NO_CONTENT;
+    }
+
+    @Transactional
+    public HttpStatus excluirFavoritos(Long userID, Long estabelecimentoID){
+        Usuario user = findUserById(userID);
+        Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
+        user.getFavoritos().remove(estabelecimento);
+        repository.save(user);
+        return HttpStatus.NO_CONTENT;
     }
 
     @Transactional

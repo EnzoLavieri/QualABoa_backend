@@ -2,6 +2,7 @@ package com.eti.qualaboa.usuario.domain.entity;
 
 import com.eti.qualaboa.config.dto.LoginRequest;
 import com.eti.qualaboa.enums.Sexo;
+import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,10 +41,18 @@ public class Usuario {
     @CollectionTable(name="usuario_preferencias", joinColumns=@JoinColumn(name="usuario_id"))
     private List<String> preferenciasUsuario;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "usuario_favoritos_estabelecimento",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "estabelecimento_id")
+    )
+    private Set<Estabelecimento> favoritos;
+
     public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(loginRequest.password(), this.senha);
     }
-    //private ArrayList<Estabelecimento> estabelecimentosFavoritos;
+
     // falta checkins e avaliações
     // falta imagens
 }
