@@ -33,7 +33,7 @@ public class EstabelecimentoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EstabelecimentoDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Estabelecimento> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(serviceEstabelecimento.buscarPorId(id));
     }
 

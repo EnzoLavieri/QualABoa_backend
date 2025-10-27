@@ -5,6 +5,7 @@ import com.eti.qualaboa.endereco.Endereco;
 import com.eti.qualaboa.evento.model.Evento;
 import com.eti.qualaboa.cupom.model.Cupom;
 import com.eti.qualaboa.usuario.domain.entity.Role;
+import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -20,6 +21,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = "idEstabelecimento")
+@ToString(exclude = {"endereco", "eventos", "cupons", "roles", "favoritadoPorUsuarios"})
 public class Estabelecimento {
 
     @Id
@@ -68,6 +71,9 @@ public class Estabelecimento {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @ManyToMany(mappedBy = "favoritos", fetch = FetchType.LAZY)
+    private Set<Usuario> favoritadoPorUsuarios;
 
     public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(loginRequest.password(), this.senha);

@@ -48,7 +48,7 @@ public class EstabelecimentoService {
         estabelecimento.setConveniencias(estabelecimentoRequest.getConveniencias());
 
         if (estabelecimentoRequest.getIdRole() == 3){
-            Role role = roleRepository.findByNome("ESTABELECIMENTO");
+            Role role = roleRepository.findByNome("ESTABELECIMENTO").orElseThrow(() -> new RuntimeException("Role ESTABELECIMENTO não encontrada"));
             estabelecimento.setRoles(Set.of(role));
         }
 
@@ -70,10 +70,10 @@ public class EstabelecimentoService {
         return repositoryEstabelecimento.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    public EstabelecimentoDTO buscarPorId(Long id) {
-        Estabelecimento est = repositoryEstabelecimento.findById(id)
+    public Estabelecimento buscarPorId(Long id) {
+        return repositoryEstabelecimento.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
-        return toDTO(est);
+
     }
 
     public EstabelecimentoDTO atualizar(Long id, Estabelecimento dto) {
