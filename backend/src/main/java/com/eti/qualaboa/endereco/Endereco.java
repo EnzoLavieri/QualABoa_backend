@@ -1,12 +1,10 @@
 package com.eti.qualaboa.endereco;
 
-import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "Endereco")
+@Table(name = "enderecos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,8 +22,6 @@ public class Endereco {
     private String estado;
     private String cep;
 
-    @OneToOne(mappedBy = "endereco")
-    @JsonBackReference
-    private Estabelecimento estabelecimento;
+    private Double latitude;
+    private Double longitude;
 }
-

@@ -29,9 +29,8 @@ public class Estabelecimento {
     private String descricao;
     private String telefone;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "idEndereco")
-    @JsonManagedReference
     private Endereco endereco;
 
     @Lob
@@ -42,13 +41,22 @@ public class Estabelecimento {
 
     @ElementCollection
     @CollectionTable(
-            name = "estabelecimentoConveniencias",
+            name = "estabelecimento_conveniencias",
             joinColumns = @JoinColumn(name = "idEstabelecimento")
     )
     @Column(name = "conveniencia")
     private List<String> conveniencias;
 
-    //relacionamentos com evento e cupom
+    // -------- integração com Google Places / Maps ----------
+    private Boolean parceiro = false;       // se é parceiro do app
+    private String placeId;                 // ID do Google Places
+    private Double latitude;
+    private Double longitude;
+
+    @Column(length = 1000)
+    private String enderecoFormatado;       // endereço obtido pelo Places
+
+    //relacionamentos
     @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Evento> eventos;
@@ -57,5 +65,3 @@ public class Estabelecimento {
     @JsonIgnore
     private List<Cupom> cupons;
 }
-
-

@@ -4,38 +4,74 @@ import com.eti.qualaboa.endereco.Endereco;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.eti.qualaboa.map.places.PlacesClient;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class EstabelecimentoService {
 
     private final EstabelecimentoRepository repositoryEstabelecimento;
-
-    public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento) {
-        this.repositoryEstabelecimento = repositoryEstabelecimento;
-    }
-
+    private final PlacesClient placesClient;
+    private final JdbcTemplate jdbcTemplate;
+    /**
+     * Cria um novo estabelecimento parceiro.
+     * Garante que o endereço não seja duplicado (idEndereco é removido antes do save).
+     */
     public EstabelecimentoDTO criar(Estabelecimento estabelecimento) {
         if (repositoryEstabelecimento.existsByEmail(estabelecimento.getEmail())) {
             throw new RuntimeException("E-mail já cadastrado");
         }
+
+        // Evita conflito de chave duplicada no endereço
+        if (estabelecimento.getEndereco() != null) {
+            estabelecimento.getEndereco().setIdEndereco(null);
+        }
+
         Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
+        jdbcTemplate.execute("""
+            ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom geography(Point,4326);
+        """);
+
+        if (salvo.getLatitude() != null && salvo.getLongitude() != null) {
+            jdbcTemplate.update("""
+                UPDATE estabelecimentos
+                SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)
+                WHERE id_estabelecimento = ?
+            """, salvo.getLongitude(), salvo.getLatitude(), salvo.getIdEstabelecimento());
+        }
         return toDTO(salvo);
     }
 
+    /**
+     * Lista todos os estabelecimentos cadastrados (parceiros).
+     */
     public List<EstabelecimentoDTO> listarTodos() {
-        return repositoryEstabelecimento.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+        return repositoryEstabelecimento.findAll()
+                .stream().map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Busca um estabelecimento pelo ID.
+     */
     public EstabelecimentoDTO buscarPorId(Long id) {
         Estabelecimento est = repositoryEstabelecimento.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
         return toDTO(est);
     }
 
+    /**
+     * Atualiza as informações de um estabelecimento existente.
+     */
     public EstabelecimentoDTO atualizar(Long id, Estabelecimento dto) {
         Estabelecimento existente = repositoryEstabelecimento.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
@@ -46,19 +82,26 @@ public class EstabelecimentoService {
         existente.setTelefone(dto.getTelefone());
         existente.setConveniencias(dto.getConveniencias());
         existente.setClassificacao(dto.getClassificacao());
+        existente.setLatitude(dto.getLatitude());
+        existente.setLongitude(dto.getLongitude());
+        existente.setParceiro(dto.getParceiro());
+        existente.setPlaceId(dto.getPlaceId());
+        existente.setEnderecoFormatado(dto.getEnderecoFormatado());
 
+        // Atualiza ou cria o endereço
         if (dto.getEndereco() != null) {
             Endereco end = existente.getEndereco();
             if (end == null) {
-                existente.setEndereco(dto.getEndereco());//endereço novo
+                existente.setEndereco(dto.getEndereco());
             } else {
-                //atualiza campos de endereço existente
                 end.setRua(dto.getEndereco().getRua());
                 end.setNumero(dto.getEndereco().getNumero());
                 end.setBairro(dto.getEndereco().getBairro());
                 end.setCidade(dto.getEndereco().getCidade());
                 end.setEstado(dto.getEndereco().getEstado());
                 end.setCep(dto.getEndereco().getCep());
+                end.setLatitude(dto.getEndereco().getLatitude());
+                end.setLongitude(dto.getEndereco().getLongitude());
             }
         }
 
@@ -66,8 +109,34 @@ public class EstabelecimentoService {
         return toDTO(atualizado);
     }
 
+    /**
+     * Exclui um estabelecimento pelo ID.
+     */
     public void deletar(Long id) {
         repositoryEstabelecimento.deleteById(id);
+    }
+
+    public EstabelecimentoDTO vincularComPlace(Long id, String placeId) {
+        Estabelecimento est = repositoryEstabelecimento.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+
+        Map<String, Object> details = placesClient.placeDetails(placeId);
+        Map<String, Object> result = (Map<String, Object>) details.get("result");
+
+        est.setPlaceId(placeId);
+        est.setNome((String) result.get("name"));
+        est.setEnderecoFormatado((String) result.get("formatted_address"));
+
+        if (result.get("geometry") != null) {
+            Map<String, Object> geometry = (Map<String, Object>) result.get("geometry");
+            Map<String, Object> location = (Map<String, Object>) geometry.get("location");
+            est.setLatitude(((Number) location.get("lat")).doubleValue());
+            est.setLongitude(((Number) location.get("lng")).doubleValue());
+        }
+
+        est.setParceiro(true);
+        repositoryEstabelecimento.save(est);
+        return toDTO(est);
     }
 
     private EstabelecimentoDTO toDTO(Estabelecimento e) {
@@ -81,7 +150,11 @@ public class EstabelecimentoService {
                 .endereco(e.getEndereco())
                 .classificacao(e.getClassificacao())
                 .conveniencias(e.getConveniencias())
+                .parceiro(e.getParceiro())
+                .placeId(e.getPlaceId())
+                .latitude(e.getLatitude())
+                .longitude(e.getLongitude())
+                .enderecoFormatado(e.getEnderecoFormatado())
                 .build();
     }
 }
-
