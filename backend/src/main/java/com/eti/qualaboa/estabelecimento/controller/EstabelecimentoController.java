@@ -1,6 +1,8 @@
 package com.eti.qualaboa.estabelecimento.controller;
 
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,14 @@ public class EstabelecimentoController {
         return ResponseEntity.ok(service.criar(estabelecimento));
     }
 
+    // public ResponseEntity<EstabelecimentoResponseDTO> criar(@RequestBody
+    // EstabelecimentoRegisterDTO estabelecimento) {
+    // EstabelecimentoResponseDTO salvo =
+    // serviceEstabelecimento.criar(estabelecimento);
+    // return ResponseEntity.created(URI.create("/estabelecimento/" +
+    // salvo.getIdEstabelecimento())).body(salvo);
+    // }
+
     @GetMapping
     public ResponseEntity<List<EstabelecimentoDTO>> listarTodos() {
         return ResponseEntity.ok(service.listarTodos());
@@ -34,8 +44,7 @@ public class EstabelecimentoController {
     @PutMapping("/{id}")
     public ResponseEntity<EstabelecimentoDTO> atualizar(
             @PathVariable Long id,
-            @RequestBody Estabelecimento estabelecimento
-    ) {
+            @RequestBody Estabelecimento estabelecimento) {
         return ResponseEntity.ok(service.atualizar(id, estabelecimento));
     }
 
@@ -48,8 +57,7 @@ public class EstabelecimentoController {
     @PutMapping("/{id}/link-place")
     public ResponseEntity<EstabelecimentoDTO> vincularPlace(
             @PathVariable Long id,
-            @RequestParam String placeId
-    ) {
+            @RequestParam String placeId) {
         return ResponseEntity.ok(service.vincularComPlace(id, placeId));
     }
 }

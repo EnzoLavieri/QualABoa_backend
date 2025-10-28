@@ -2,16 +2,24 @@ package com.eti.qualaboa.estabelecimento.service;
 
 import com.eti.qualaboa.endereco.Endereco;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
+import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import com.eti.qualaboa.usuario.domain.entity.Role;
+import com.eti.qualaboa.usuario.repository.RoleRepository;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.eti.qualaboa.map.places.PlacesClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +30,16 @@ public class EstabelecimentoService {
     private final EstabelecimentoRepository repositoryEstabelecimento;
     private final PlacesClient placesClient;
     private final JdbcTemplate jdbcTemplate;
+    private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, RoleRepository roleRepository,
+            BCryptPasswordEncoder passwordEncoder) {
+        this.repositoryEstabelecimento = repositoryEstabelecimento;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     /**
      * Cria um novo estabelecimento parceiro.
      * Garante que o endereço não seja duplicado (idEndereco é removido antes do save).
@@ -31,24 +49,78 @@ public class EstabelecimentoService {
             throw new RuntimeException("E-mail já cadastrado");
         }
 
-        // Evita conflito de chave duplicada no endereço
-        if (estabelecimento.getEndereco() != null) {
-            estabelecimento.getEndereco().setIdEndereco(null);
+    // Evita conflito de chave duplicada no endereço
+    // if (estabelecimento.getEndereco() != null) {
+    // estabelecimento.getEndereco().setIdEndereco(null);
+    // }
+
+    // Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
+    // jdbcTemplate.execute("""
+    // ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom
+    // geography(Point,4326);
+    // """);
+
+    // if (salvo.getLatitude() != null && salvo.getLongitude() != null) {
+    // jdbcTemplate.update("""
+    // UPDATE estabelecimentos
+    // SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)
+    // WHERE id_estabelecimento = ?
+    // """, salvo.getLongitude(), salvo.getLatitude(),
+    // salvo.getIdEstabelecimento());
+    // }
+    // return toDTO(salvo);
+
+    public EstabelecimentoResponseDTO criar(EstabelecimentoRegisterDTO estabelecimentoRequest) {
+        if (repositoryEstabelecimento.existsByEmail(estabelecimentoRequest.getEmail())) {
+            throw new RuntimeException("E-mail já cadastrado");
+        }
+
+        Estabelecimento estabelecimento = new Estabelecimento();
+
+        estabelecimento.setNome(estabelecimentoRequest.getNome());
+        estabelecimento.setEmail(estabelecimentoRequest.getEmail());
+        estabelecimento.setSenha(passwordEncoder.encode(estabelecimentoRequest.getSenha()));
+        estabelecimento.setCategoria(estabelecimentoRequest.getCategoria());
+        estabelecimento.setDescricao(estabelecimentoRequest.getDescricao());
+        estabelecimento.setTelefone(estabelecimentoRequest.getTelefone());
+        estabelecimento.setEndereco(estabelecimentoRequest.getEndereco());
+        estabelecimento.setConveniencias(estabelecimentoRequest.getConveniencias());
+
+        if (estabelecimentoRequest.getIdRole() == 3) {
+            Role role = roleRepository.findByNome("ESTABELECIMENTO")
+                    .orElseThrow(() -> new RuntimeException("Role ESTABELECIMENTO não encontrada"));
+            estabelecimento.setRoles(Set.of(role));
         }
 
         Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
+
         jdbcTemplate.execute("""
-            ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom geography(Point,4326);
-        """);
+                    ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom geography(Point,4326);
+                """);
 
         if (salvo.getLatitude() != null && salvo.getLongitude() != null) {
             jdbcTemplate.update("""
-                UPDATE estabelecimentos
-                SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)
-                WHERE id_estabelecimento = ?
-            """, salvo.getLongitude(), salvo.getLatitude(), salvo.getIdEstabelecimento());
+                        UPDATE estabelecimentos
+                        SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)
+                        WHERE id_estabelecimento = ?
+                    """, salvo.getLongitude(), salvo.getLatitude(), salvo.getIdEstabelecimento());
         }
-        return toDTO(salvo);
+
+        return new EstabelecimentoResponseDTO(
+                salvo.getIdEstabelecimento(),
+                salvo.getNome(),
+                salvo.getEmail(),
+                salvo.getCategoria(),
+                salvo.getDescricao(),
+                salvo.getTelefone(),
+                salvo.getParceiro(),
+                salvo.getPlaceId(),
+                salvo.getLatitude(),
+                salvo.getLongitude(),
+                salvo.getEnderecoFormatado(),
+                salvo.getEndereco(),
+                salvo.getClassificacao(),
+                salvo.getConveniencias());
     }
 
     /**
@@ -63,10 +135,10 @@ public class EstabelecimentoService {
     /**
      * Busca um estabelecimento pelo ID.
      */
-    public EstabelecimentoDTO buscarPorId(Long id) {
-        Estabelecimento est = repositoryEstabelecimento.findById(id)
+    public Estabelecimento buscarPorId(Long id) {
+        return repositoryEstabelecimento.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
-        return toDTO(est);
+
     }
 
     /**

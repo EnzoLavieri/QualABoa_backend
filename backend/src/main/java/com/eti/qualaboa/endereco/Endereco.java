@@ -9,6 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = "idEndereco")
+@ToString(exclude = {"estabelecimento"})
 public class Endereco {
 
     @Id
