@@ -7,6 +7,7 @@ import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.repository.RoleRepository;
@@ -23,7 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class EstabelecimentoService {
 
@@ -33,9 +34,11 @@ public class EstabelecimentoService {
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, RoleRepository roleRepository,
-            BCryptPasswordEncoder passwordEncoder) {
+    public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, PlacesClient placesClient, JdbcTemplate jdbcTemplate, RoleRepository roleRepository,
+        BCryptPasswordEncoder passwordEncoder) {
         this.repositoryEstabelecimento = repositoryEstabelecimento;
+        this.placesClient = placesClient;
+        this.jdbcTemplate = jdbcTemplate;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -44,10 +47,10 @@ public class EstabelecimentoService {
      * Cria um novo estabelecimento parceiro.
      * Garante que o endereço não seja duplicado (idEndereco é removido antes do save).
      */
-    public EstabelecimentoDTO criar(Estabelecimento estabelecimento) {
-        if (repositoryEstabelecimento.existsByEmail(estabelecimento.getEmail())) {
-            throw new RuntimeException("E-mail já cadastrado");
-        }
+//    public EstabelecimentoDTO criar(Estabelecimento estabelecimento) {
+//        if (repositoryEstabelecimento.existsByEmail(estabelecimento.getEmail())) {
+//            throw new RuntimeException("E-mail já cadastrado");
+//        }
 
     // Evita conflito de chave duplicada no endereço
     // if (estabelecimento.getEndereco() != null) {
@@ -71,6 +74,7 @@ public class EstabelecimentoService {
     // return toDTO(salvo);
 
     public EstabelecimentoResponseDTO criar(EstabelecimentoRegisterDTO estabelecimentoRequest) {
+        log.info("Recebido EstabelecimentoRegisterDTO para criação: {}", estabelecimentoRequest);
         if (repositoryEstabelecimento.existsByEmail(estabelecimentoRequest.getEmail())) {
             throw new RuntimeException("E-mail já cadastrado");
         }
@@ -83,6 +87,11 @@ public class EstabelecimentoService {
         estabelecimento.setCategoria(estabelecimentoRequest.getCategoria());
         estabelecimento.setDescricao(estabelecimentoRequest.getDescricao());
         estabelecimento.setTelefone(estabelecimentoRequest.getTelefone());
+        estabelecimento.setParceiro(estabelecimentoRequest.getParceiro());
+        estabelecimento.setPlaceId(estabelecimentoRequest.getPlaceId());
+        estabelecimento.setLatitude(estabelecimentoRequest.getLatitude());
+        estabelecimento.setLongitude(estabelecimentoRequest.getLongitude());
+        estabelecimento.setEnderecoFormatado(estabelecimentoRequest.getEnderecoFormatado());
         estabelecimento.setEndereco(estabelecimentoRequest.getEndereco());
         estabelecimento.setConveniencias(estabelecimentoRequest.getConveniencias());
 

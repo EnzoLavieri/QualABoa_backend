@@ -1,7 +1,6 @@
 package com.eti.qualaboa.estabelecimento.dto;
 
 import com.eti.qualaboa.endereco.Endereco;
-import com.eti.qualaboa.enums.Sexo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +18,7 @@ public class EstabelecimentoResponseDTO {
     private Double classificacao;
     private List<String> conveniencias;
 
-    public EstabelecimentoResponseDTO(Long id, String nome, String email,String categoria,String descricao,String telefone,Endereco endereco,Double classificacao,  List<String> conveniencias) {
+    public EstabelecimentoResponseDTO(Long id, String nome, String email, String categoria, String descricao, String telefone, Boolean parceiro, String placeId, Double latitude, Double longitude, String enderecoFormatado, Endereco endereco, Double classificacao, List<String> conveniencias) {
         this.idEstabelecimento = id;
         this.nome = nome;
         this.email = email;

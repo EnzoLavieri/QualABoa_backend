@@ -38,7 +38,6 @@ public class UsuarioService {
         user.setNome(requestDTO.getNome());
         user.setEmail(requestDTO.getEmail());
         user.setSenha(passwordEncoder.encode(requestDTO.getSenha()));
-        user.setSexo(requestDTO.getSexo());
         user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
         log.info("Iniciando processo de criação de usuário para o DTO: {}",requestDTO.getIdRole());
         if (requestDTO.getIdRole() == 2) {

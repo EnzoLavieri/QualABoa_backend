@@ -6,6 +6,7 @@ import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,12 +15,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/estabelecimentos")
 @RequiredArgsConstructor
+@Slf4j
 public class EstabelecimentoController {
 
     private final EstabelecimentoService service;
 
     @PostMapping
-    public ResponseEntity<EstabelecimentoDTO> criar(@RequestBody Estabelecimento estabelecimento) {
+    public ResponseEntity<EstabelecimentoResponseDTO> criar(@RequestBody EstabelecimentoRegisterDTO estabelecimento) {
+        log.info("Recebido EstabelecimentoRegisterDTO para criação: {}", estabelecimento);
         return ResponseEntity.ok(service.criar(estabelecimento));
     }
 
@@ -37,7 +40,7 @@ public class EstabelecimentoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EstabelecimentoDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Estabelecimento> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 

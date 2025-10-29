@@ -3,10 +3,12 @@ package com.eti.qualaboa.estabelecimento.dto;
 import com.eti.qualaboa.endereco.Endereco;
 import jakarta.persistence.Column;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
 @Data
+@ToString
 public class EstabelecimentoRegisterDTO {
     private Long idEstabelecimento;
     private String nome;

@@ -26,9 +26,6 @@ public class UsuarioRequestDTO {
     @NotBlank(message = "A senha é obrigatória.")
     private String senha;
 
-    @NotNull(message = "O sexo é obrigatório.")
-    private Sexo sexo;
-
     private Long idRole;
 
     private List<String> preferenciasUsuario;
