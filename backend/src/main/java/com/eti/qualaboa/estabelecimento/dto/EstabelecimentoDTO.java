@@ -18,5 +18,9 @@ public class EstabelecimentoDTO {
     private Endereco endereco;
     private Double classificacao;
     private List<String> conveniencias;
+    private Boolean parceiro;
+    private String placeId;
+    private Double latitude;
+    private Double longitude;
+    private String enderecoFormatado;
 }
-
