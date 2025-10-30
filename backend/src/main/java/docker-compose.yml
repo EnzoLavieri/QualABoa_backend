@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgis/postgis:15-3.3
+    build: .
     container_name: postgres_qualaboa
     restart: always
     environment:
