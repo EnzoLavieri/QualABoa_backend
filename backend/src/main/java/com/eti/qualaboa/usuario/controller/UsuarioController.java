@@ -26,7 +26,6 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id){
         Usuario user = usuarioService.findUserById(id);
 
@@ -57,6 +56,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<HttpStatus> deletarUsuario(@PathVariable Long id){
         HttpStatus user = usuarioService.deletarUsuario(id);
         return  ResponseEntity.noContent().build();

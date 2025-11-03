@@ -1,4 +1,4 @@
 package com.eti.qualaboa.config.dto;
 
-public record LoginResponse(String accessToken, Long expiresIn) {
+public record LoginResponse(Long userID,String accessToken, Long expiresIn) {
 }
