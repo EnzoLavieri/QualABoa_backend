@@ -34,12 +34,17 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO requestDTO){
+
+       if (repository.findByEmail(requestDTO.getEmail()).isPresent()) {
+           throw new RuntimeException("Email já cadastrado");
+       }
+
         Usuario user = new Usuario();
         user.setNome(requestDTO.getNome());
         user.setEmail(requestDTO.getEmail());
         user.setSenha(passwordEncoder.encode(requestDTO.getSenha()));
         user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
-        log.info("Iniciando processo de criação de usuário para o DTO: {}",requestDTO.getIdRole());
+
         if (requestDTO.getIdRole() == 2) {
             Role roleUser = roleRepository.findByNome("ADMIN").orElseThrow(() -> new RuntimeException("Role ADMIN não encontrada"));
             user.setRoles(Set.of(roleUser));
@@ -47,8 +52,6 @@ public class UsuarioService {
             Role roleUser = roleRepository.findByNome("USER").orElseThrow(() -> new RuntimeException("Role USER não encontrada"));
             user.setRoles(Set.of(roleUser));
         }
-
-        log.info("Iniciando processo de criação de usuário para o DTO: {}", user);
 
         Usuario usuarioSalvo = repository.save(user);
 
