@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -89,12 +90,23 @@ public class UsuarioService {
     }
 
     @Transactional
-    public HttpStatus favoritarEstabelecimento(Long userID, Long estabelecimentoID){
+    public HttpStatus favoritarEstabelecimento( Long userID, Long estabelecimentoID){
         Usuario user = findUserById(userID);
         Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
         user.getFavoritos().add(estabelecimento);
         repository.save(user);
         return HttpStatus.NO_CONTENT;
+    }
+
+    @Transactional(readOnly = true)
+    public Set<Estabelecimento> buscarFavoritos(Long usuarioId) {
+        Optional<Usuario> usuarioComFavoritos = repository.findUserFaviritosById(usuarioId);
+
+        if (usuarioComFavoritos.isEmpty()) {
+            throw new RuntimeException("Usuário não encontrado!");
+        }
+
+        return usuarioComFavoritos.get().getFavoritos();
     }
 
     @Transactional
