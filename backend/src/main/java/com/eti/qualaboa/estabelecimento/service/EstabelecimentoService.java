@@ -1,5 +1,7 @@
 package com.eti.qualaboa.estabelecimento.service;
 
+import com.eti.qualaboa.cupom.dto.CupomDTO;
+import com.eti.qualaboa.cupom.model.Cupom;
 import com.eti.qualaboa.endereco.Endereco;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
@@ -220,6 +222,29 @@ public class EstabelecimentoService {
         return toDTO(est);
     }
 
+    @Transactional(readOnly = true)
+    public List<CupomDTO> listarCuponsPorEstabelecimento(Long idEstabelecimento) {
+        Estabelecimento estabelecimento = repositoryEstabelecimento.findById(idEstabelecimento)
+                .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+
+        return estabelecimento.getCupons()
+                .stream()
+                .map(c -> CupomDTO.builder()
+                        .idCupom(c.getIdCupom())
+                        .codigo(c.getCodigo())
+                        .descricao(c.getDescricao())
+                        .tipo(c.getTipo())
+                        .valor(c.getValor())
+                        .dataInicio(c.getDataInicio())
+                        .dataFim(c.getDataFim())
+                        .ativo(c.isAtivo())
+                        .quantidadeTotal(c.getQuantidadeTotal())
+                        .quantidadeUsada(c.getQuantidadeUsada())
+                        .idEstabelecimento(estabelecimento.getIdEstabelecimento())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     private EstabelecimentoDTO toDTO(Estabelecimento e) {
         return EstabelecimentoDTO.builder()
                 .idEstabelecimento(e.getIdEstabelecimento())
@@ -238,4 +263,5 @@ public class EstabelecimentoService {
                 .enderecoFormatado(e.getEnderecoFormatado())
                 .build();
     }
+
 }
