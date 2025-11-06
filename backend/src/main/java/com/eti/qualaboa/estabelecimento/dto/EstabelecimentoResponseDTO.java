@@ -1,6 +1,7 @@
 package com.eti.qualaboa.estabelecimento.dto;
 
 import com.eti.qualaboa.endereco.Endereco;
+import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,11 @@ public class EstabelecimentoResponseDTO {
     private String categoria;
     private String descricao;
     private String telefone;
+    private Boolean parceiro;
+    private String placeId;
+    private Double latitude;
+    private Double longitude;
+    private String enderecoFormatado;
     private Endereco endereco;
     private Double classificacao;
     private List<String> conveniencias;
@@ -28,5 +34,22 @@ public class EstabelecimentoResponseDTO {
         this.endereco = endereco;
         this.classificacao = classificacao;
         this.conveniencias = conveniencias;
+    }
+
+    public EstabelecimentoResponseDTO(Estabelecimento estabelecimento) {
+        this.idEstabelecimento = estabelecimento.getIdEstabelecimento();
+        this.nome = estabelecimento.getNome();
+        this.email = estabelecimento.getEmail();
+        this.categoria = estabelecimento.getCategoria();
+        this.descricao = estabelecimento.getDescricao();
+        this.telefone = estabelecimento.getTelefone();
+        this.parceiro = estabelecimento.getParceiro();
+        this.placeId = estabelecimento.getPlaceId();
+        this.latitude = estabelecimento.getLatitude();
+        this.longitude = estabelecimento.getLongitude();
+        this.enderecoFormatado = estabelecimento.getEnderecoFormatado();
+        this.endereco = estabelecimento.getEndereco();
+        this.classificacao = estabelecimento.getClassificacao();
+        this.conveniencias = estabelecimento.getConveniencias();
     }
 }
