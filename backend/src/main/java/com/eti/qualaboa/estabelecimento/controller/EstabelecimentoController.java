@@ -1,5 +1,7 @@
 package com.eti.qualaboa.estabelecimento.controller;
 
+import com.eti.qualaboa.cupom.dto.CupomDTO;
+import com.eti.qualaboa.cupom.model.Cupom;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
@@ -63,4 +65,11 @@ public class EstabelecimentoController {
             @RequestParam String placeId) {
         return ResponseEntity.ok(service.vincularComPlace(id, placeId));
     }
+
+    @GetMapping("/cupons/{idEstabelecimento}")
+    public ResponseEntity<List<CupomDTO>> listarCuponsPorEstabelecimento(@PathVariable Long idEstabelecimento) {
+        List<CupomDTO> cupons = service.listarCuponsPorEstabelecimento(idEstabelecimento);
+        return ResponseEntity.ok(cupons);
+    }
+
 }
