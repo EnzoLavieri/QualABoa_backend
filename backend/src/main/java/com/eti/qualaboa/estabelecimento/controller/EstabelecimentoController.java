@@ -26,22 +26,16 @@ public class EstabelecimentoController {
         return ResponseEntity.ok(service.criar(estabelecimento));
     }
 
-    // public ResponseEntity<EstabelecimentoResponseDTO> criar(@RequestBody
-    // EstabelecimentoRegisterDTO estabelecimento) {
-    // EstabelecimentoResponseDTO salvo =
-    // serviceEstabelecimento.criar(estabelecimento);
-    // return ResponseEntity.created(URI.create("/estabelecimento/" +
-    // salvo.getIdEstabelecimento())).body(salvo);
-    // }
-
     @GetMapping
     public ResponseEntity<List<EstabelecimentoDTO>> listarTodos() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Estabelecimento> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(service.buscarPorId(id));
+    public ResponseEntity<EstabelecimentoResponseDTO> buscarPorId(@PathVariable Long id) {
+        Estabelecimento estabelecimento = service.buscarPorId(id);
+        EstabelecimentoResponseDTO responseDTO = new EstabelecimentoResponseDTO(estabelecimento);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/{id}")

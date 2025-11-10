@@ -6,13 +6,12 @@ import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
-import lombok.RequiredArgsConstructor;
+import com.eti.qualaboa.metricas.model.Metricas;
+import com.eti.qualaboa.metricas.service.MetricasService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.repository.RoleRepository;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,45 +32,17 @@ public class EstabelecimentoService {
     private final JdbcTemplate jdbcTemplate;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MetricasService metricasService;
 
     public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, PlacesClient placesClient, JdbcTemplate jdbcTemplate, RoleRepository roleRepository,
-        BCryptPasswordEncoder passwordEncoder) {
+                                  BCryptPasswordEncoder passwordEncoder, MetricasService metricasService) {
         this.repositoryEstabelecimento = repositoryEstabelecimento;
         this.placesClient = placesClient;
         this.jdbcTemplate = jdbcTemplate;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.metricasService = metricasService;
     }
-
-    /**
-     * Cria um novo estabelecimento parceiro.
-     * Garante que o endereço não seja duplicado (idEndereco é removido antes do save).
-     */
-//    public EstabelecimentoDTO criar(Estabelecimento estabelecimento) {
-//        if (repositoryEstabelecimento.existsByEmail(estabelecimento.getEmail())) {
-//            throw new RuntimeException("E-mail já cadastrado");
-//        }
-
-    // Evita conflito de chave duplicada no endereço
-    // if (estabelecimento.getEndereco() != null) {
-    // estabelecimento.getEndereco().setIdEndereco(null);
-    // }
-
-    // Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
-    // jdbcTemplate.execute("""
-    // ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom
-    // geography(Point,4326);
-    // """);
-
-    // if (salvo.getLatitude() != null && salvo.getLongitude() != null) {
-    // jdbcTemplate.update("""
-    // UPDATE estabelecimentos
-    // SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)
-    // WHERE id_estabelecimento = ?
-    // """, salvo.getLongitude(), salvo.getLatitude(),
-    // salvo.getIdEstabelecimento());
-    // }
-    // return toDTO(salvo);
 
     public EstabelecimentoResponseDTO criar(EstabelecimentoRegisterDTO estabelecimentoRequest) {
         log.info("Recebido EstabelecimentoRegisterDTO para criação: {}", estabelecimentoRequest);
@@ -145,9 +116,10 @@ public class EstabelecimentoService {
      * Busca um estabelecimento pelo ID.
      */
     public Estabelecimento buscarPorId(Long id) {
-        return repositoryEstabelecimento.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
-
+        Estabelecimento estabelecimento = repositoryEstabelecimento.findById(id).orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+        metricasService.registrarClique(id);
+        repositoryEstabelecimento.save(estabelecimento);
+        return estabelecimento;
     }
 
     /**
