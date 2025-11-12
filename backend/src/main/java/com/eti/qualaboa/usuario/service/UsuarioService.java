@@ -36,15 +36,15 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO requestDTO){
 
-       if (repository.findByEmail(requestDTO.getEmail()).isPresent()) {
-           throw new RuntimeException("Email já cadastrado");
-       }
-
         Usuario user = new Usuario();
         user.setNome(requestDTO.getNome());
-        user.setEmail(requestDTO.getEmail());
+        user.setEmail(requestDTO.getEmail().toLowerCase());
         user.setSenha(passwordEncoder.encode(requestDTO.getSenha()));
         user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
+
+        if (repository.findByEmail(requestDTO.getEmail().toLowerCase()).isPresent()) {
+            throw new RuntimeException("Email já cadastrado");
+        }
 
         if (requestDTO.getIdRole() == 2) {
             Role roleUser = roleRepository.findByNome("ADMIN").orElseThrow(() -> new RuntimeException("Role ADMIN não encontrada"));
