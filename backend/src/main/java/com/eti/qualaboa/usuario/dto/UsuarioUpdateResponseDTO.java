@@ -12,9 +12,11 @@ public class UsuarioUpdateResponseDTO {
 
     private String nome;
     private List<String> preferenciasUsuario;
+    private String fotoUrl;
 
     public UsuarioUpdateResponseDTO(Usuario user) {
         this.nome = user.getNome();
         this.preferenciasUsuario = user.getPreferenciasUsuario();
+        this.fotoUrl = user.getFotoUrl();
     }
 }

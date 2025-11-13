@@ -29,6 +29,9 @@ public class Usuario {
     private String senha;
     private Sexo sexo;
 
+    @Column(name = "foto_url", length = 1000)
+    private String fotoUrl;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "tb_users_roles",

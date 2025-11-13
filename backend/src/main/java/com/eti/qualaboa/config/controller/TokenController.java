@@ -53,7 +53,11 @@ public class TokenController {
                 .build();
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-        return  ResponseEntity.ok(new LoginResponse(user.get().getId(), jwtValue,expiresIn));
+        return  ResponseEntity.ok(new LoginResponse(user.get().getId(),
+                jwtValue,
+                expiresIn,
+                user.get().getFotoUrl()
+        ));
     }
 
     @PostMapping("/login/estabelecimento")
@@ -77,6 +81,10 @@ public class TokenController {
                 .build();
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-        return  ResponseEntity.ok(new LoginResponse(estabelecimento.get().getIdEstabelecimento(), jwtValue,expiresIn));
+        return  ResponseEntity.ok(new LoginResponse(estabelecimento.get().getIdEstabelecimento(),
+                jwtValue,
+                expiresIn,
+                estabelecimento.get().getFotoUrl()
+        ));
     }
 }
