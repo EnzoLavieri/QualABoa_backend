@@ -23,8 +23,13 @@ public class EstabelecimentoResponseDTO {
     private Endereco endereco;
     private Double classificacao;
     private List<String> conveniencias;
+    private String fotoUrl;
 
-    public EstabelecimentoResponseDTO(Long id, String nome, String email, String categoria, String descricao, String telefone, Boolean parceiro, String placeId, Double latitude, Double longitude, String enderecoFormatado, Endereco endereco, Double classificacao, List<String> conveniencias) {
+    public EstabelecimentoResponseDTO(Long id, String nome, String email, String categoria,
+                                      String descricao, String telefone, Boolean parceiro,
+                                      String placeId, Double latitude, Double longitude,
+                                      String enderecoFormatado, Endereco endereco, Double classificacao,
+                                      List<String> conveniencias) {
         this.idEstabelecimento = id;
         this.nome = nome;
         this.email = email;
@@ -34,6 +39,7 @@ public class EstabelecimentoResponseDTO {
         this.endereco = endereco;
         this.classificacao = classificacao;
         this.conveniencias = conveniencias;
+        this.fotoUrl = fotoUrl;
     }
 
     public EstabelecimentoResponseDTO(Estabelecimento estabelecimento) {
@@ -51,5 +57,6 @@ public class EstabelecimentoResponseDTO {
         this.endereco = estabelecimento.getEndereco();
         this.classificacao = estabelecimento.getClassificacao();
         this.conveniencias = estabelecimento.getConveniencias();
+        this.fotoUrl = estabelecimento.getFotoUrl();
     }
 }

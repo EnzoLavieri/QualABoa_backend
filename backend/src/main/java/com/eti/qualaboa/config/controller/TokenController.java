@@ -41,7 +41,7 @@ public class TokenController {
             throw new BadCredentialsException("email ou senha inválidos");
         }
 
-        var expiresIn = 300L;
+        var expiresIn = 84000L;
         var scope = user.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(" "));
 
         var claims = JwtClaimsSet.builder()

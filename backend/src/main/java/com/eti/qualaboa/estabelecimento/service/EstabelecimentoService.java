@@ -1,5 +1,7 @@
 package com.eti.qualaboa.estabelecimento.service;
 
+import com.eti.qualaboa.cupom.dto.CupomDTO;
+import com.eti.qualaboa.cupom.model.Cupom;
 import com.eti.qualaboa.endereco.Endereco;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
@@ -78,6 +80,7 @@ public class EstabelecimentoService {
         estabelecimento.setEnderecoFormatado(estabelecimentoRequest.getEnderecoFormatado());
         estabelecimento.setEndereco(estabelecimentoRequest.getEndereco());
         estabelecimento.setConveniencias(estabelecimentoRequest.getConveniencias());
+        estabelecimento.setFotoUrl(estabelecimentoRequest.getFotoUrl());
 
         if (estabelecimentoRequest.getIdRole() == 3) {
             Role role = roleRepository.findByNome("ESTABELECIMENTO")
@@ -166,6 +169,7 @@ public class EstabelecimentoService {
         existente.setParceiro(dto.getParceiro());
         existente.setPlaceId(dto.getPlaceId());
         existente.setEnderecoFormatado(dto.getEnderecoFormatado());
+        existente.setFotoUrl(dto.getFotoUrl());
 
         // Atualiza ou cria o endereço
         if (dto.getEndereco() != null) {
@@ -233,6 +237,29 @@ public class EstabelecimentoService {
         return new RelatorioCliquesDTO(detalhamento);
     }
 
+    @Transactional(readOnly = true)
+    public List<CupomDTO> listarCuponsPorEstabelecimento(Long idEstabelecimento) {
+        Estabelecimento estabelecimento = repositoryEstabelecimento.findById(idEstabelecimento)
+                .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+
+        return estabelecimento.getCupons()
+                .stream()
+                .map(c -> CupomDTO.builder()
+                        .idCupom(c.getIdCupom())
+                        .codigo(c.getCodigo())
+                        .descricao(c.getDescricao())
+                        .tipo(c.getTipo())
+                        .valor(c.getValor())
+                        .dataInicio(c.getDataInicio())
+                        .dataFim(c.getDataFim())
+                        .ativo(c.isAtivo())
+                        .quantidadeTotal(c.getQuantidadeTotal())
+                        .quantidadeUsada(c.getQuantidadeUsada())
+                        .idEstabelecimento(estabelecimento.getIdEstabelecimento())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     private EstabelecimentoDTO toDTO(Estabelecimento e) {
         return EstabelecimentoDTO.builder()
                 .idEstabelecimento(e.getIdEstabelecimento())
@@ -249,6 +276,7 @@ public class EstabelecimentoService {
                 .latitude(e.getLatitude())
                 .longitude(e.getLongitude())
                 .enderecoFormatado(e.getEnderecoFormatado())
+                .fotoUrl(e.getFotoUrl())
                 .build();
     }
 

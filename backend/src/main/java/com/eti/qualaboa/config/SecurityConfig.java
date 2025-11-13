@@ -21,6 +21,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
@@ -49,6 +51,11 @@ public class SecurityConfig {
                         .jwt(Customizer.withDefaults())
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                  .requestMatchers("/v3/api-docs/**").permitAll()
+                  .requestMatchers("/swagger-ui/**").permitAll()
+                  .requestMatchers("/swagger-ui.html").permitAll()
+                .anyRequest().authenticated()
+
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

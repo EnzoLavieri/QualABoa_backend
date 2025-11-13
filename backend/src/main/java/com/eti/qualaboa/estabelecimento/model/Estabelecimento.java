@@ -45,9 +45,17 @@ public class Estabelecimento {
     @JoinColumn(name = "idEndereco")
     private Endereco endereco;
 
-    @Lob
-    @JsonIgnore
-    private byte[] imagemPerfil;
+    // Adiciona coluna de foto do estabelecimento
+    @ManyToOne
+    @JoinColumn(name = "id_role")
+    private Role idRole;
+
+    @Column(name = "foto_url", length = 1000)
+    private String fotoUrl;
+
+//    @Lob
+//    @JsonIgnore
+//    private byte[] imagemPerfil;
 
     private Double classificacao;
 
