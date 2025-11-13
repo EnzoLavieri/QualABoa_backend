@@ -94,7 +94,7 @@ public class UsuarioService {
     @Transactional
     public HttpStatus favoritarEstabelecimento( Long userID, Long estabelecimentoID){
         Usuario user = findUserById(userID);
-        Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
+        Estabelecimento estabelecimento = estabelecimentoService.buscarPorEstabelecimento(estabelecimentoID);
         boolean addFavorito = user.getFavoritos().add(estabelecimento);
 
         if (addFavorito) {
@@ -119,7 +119,7 @@ public class UsuarioService {
     @Transactional
     public HttpStatus excluirFavoritos(Long userID, Long estabelecimentoID){
         Usuario user = findUserById(userID);
-        Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
+        Estabelecimento estabelecimento = estabelecimentoService.buscarPorEstabelecimento(estabelecimentoID);
         user.getFavoritos().remove(estabelecimento);
         repository.save(user);
         return HttpStatus.NO_CONTENT;

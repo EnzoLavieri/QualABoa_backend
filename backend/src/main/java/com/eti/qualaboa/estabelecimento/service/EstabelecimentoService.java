@@ -6,7 +6,12 @@ import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
+import com.eti.qualaboa.metricas.dto.CliquesPorDiaDTO;
+import com.eti.qualaboa.metricas.dto.RelatorioCliquesDTO;
 import com.eti.qualaboa.metricas.model.Metricas;
+import com.eti.qualaboa.metricas.repository.LogBuscaPeloNomeRepository;
+import com.eti.qualaboa.metricas.repository.LogCliqueRepository;
+import com.eti.qualaboa.metricas.repository.LogFavoritosRepository;
 import com.eti.qualaboa.metricas.service.MetricasService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.eti.qualaboa.map.places.PlacesClient;
 
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,15 +39,21 @@ public class EstabelecimentoService {
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final MetricasService metricasService;
+    private final LogCliqueRepository logCliqueRepository;
+    private final LogFavoritosRepository logFavoritosRepository;
+    private final LogBuscaPeloNomeRepository logBuscaPeloNomeRepository;
 
     public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, PlacesClient placesClient, JdbcTemplate jdbcTemplate, RoleRepository roleRepository,
-                                  BCryptPasswordEncoder passwordEncoder, MetricasService metricasService) {
+                                  BCryptPasswordEncoder passwordEncoder, MetricasService metricasService, LogCliqueRepository logCliqueRepository, LogFavoritosRepository logFavoritosRepository, LogFavoritosRepository logFavoritosRepository1, LogBuscaPeloNomeRepository logBuscaPeloNomeRepository) {
         this.repositoryEstabelecimento = repositoryEstabelecimento;
         this.placesClient = placesClient;
         this.jdbcTemplate = jdbcTemplate;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.metricasService = metricasService;
+        this.logCliqueRepository = logCliqueRepository;
+        this.logFavoritosRepository = logFavoritosRepository1;
+        this.logBuscaPeloNomeRepository = logBuscaPeloNomeRepository;
     }
 
     public EstabelecimentoResponseDTO criar(EstabelecimentoRegisterDTO estabelecimentoRequest) {
@@ -53,6 +65,7 @@ public class EstabelecimentoService {
         Estabelecimento estabelecimento = new Estabelecimento();
 
         estabelecimento.setNome(estabelecimentoRequest.getNome());
+        estabelecimento.setNomeNormalizado(normalizarNome(estabelecimentoRequest.getNome()));
         estabelecimento.setEmail(estabelecimentoRequest.getEmail());
         estabelecimento.setSenha(passwordEncoder.encode(estabelecimentoRequest.getSenha()));
         estabelecimento.setCategoria(estabelecimentoRequest.getCategoria());
@@ -113,12 +126,25 @@ public class EstabelecimentoService {
     }
 
     /**
-     * Busca um estabelecimento pelo ID.
+     * Busca um estabelecimento pelo ID e conta os cliques.
      */
     public Estabelecimento buscarPorId(Long id) {
         Estabelecimento estabelecimento = repositoryEstabelecimento.findById(id).orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
         metricasService.registrarClique(id);
         repositoryEstabelecimento.save(estabelecimento);
+        return estabelecimento;
+    }
+
+    public Estabelecimento buscarPorEstabelecimento(Long id) {
+        Estabelecimento estabelecimento = repositoryEstabelecimento.findById(id).orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+        return estabelecimento;
+    }
+
+    public Estabelecimento buscarPorNome(String nome) {
+        String nomeBusca = normalizarNome(nome);
+        log.info("Iniciando busca normalizada por: '{}'", nomeBusca);
+        Estabelecimento estabelecimento = repositoryEstabelecimento.findByNomeNormalizado(nomeBusca).orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado Controller"));
+        metricasService.registrarBuscaPeloNome(nome);
         return estabelecimento;
     }
 
@@ -192,6 +218,21 @@ public class EstabelecimentoService {
         return toDTO(est);
     }
 
+    public RelatorioCliquesDTO buscarRelatorioDeCliques(Long idEstabelecimento) {
+        List<CliquesPorDiaDTO> detalhamento = logCliqueRepository.findCliquesAgrupadosPorDia(idEstabelecimento);
+        return new RelatorioCliquesDTO(detalhamento);
+    }
+
+    public RelatorioCliquesDTO buscarRelatorioDeFavoritos(Long idEstabelecimento) {
+        List<CliquesPorDiaDTO> detalhamento = logFavoritosRepository.findFavoritosAgrupadosPorDia(idEstabelecimento);
+        return new RelatorioCliquesDTO(detalhamento);
+    }
+
+    public RelatorioCliquesDTO buscarRelatorioDeBusca(Long idEstabelecimento) {
+        List<CliquesPorDiaDTO> detalhamento = logBuscaPeloNomeRepository.findBuscasAgrupadasPorDia(idEstabelecimento);
+        return new RelatorioCliquesDTO(detalhamento);
+    }
+
     private EstabelecimentoDTO toDTO(Estabelecimento e) {
         return EstabelecimentoDTO.builder()
                 .idEstabelecimento(e.getIdEstabelecimento())
@@ -209,5 +250,14 @@ public class EstabelecimentoService {
                 .longitude(e.getLongitude())
                 .enderecoFormatado(e.getEnderecoFormatado())
                 .build();
+    }
+
+    public String normalizarNome(String nome) {
+        if (nome == null) {
+            return null;
+        }
+        String nomeSemAcento = Normalizer.normalize(nome, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return nomeSemAcento.toUpperCase().trim();
     }
 }

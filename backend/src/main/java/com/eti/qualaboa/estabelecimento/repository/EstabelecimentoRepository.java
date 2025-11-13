@@ -1,11 +1,9 @@
 package com.eti.qualaboa.estabelecimento.repository;
 
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
-import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.util.List;
 
 import java.util.Optional;
@@ -31,4 +29,6 @@ public interface EstabelecimentoRepository extends JpaRepository<Estabelecimento
             @Param("radius") double radiusMeters);
 
     Optional<Estabelecimento> findByEmail(String email);
+
+    Optional<Estabelecimento> findByNomeNormalizado(String nomeNormalizado);
 }

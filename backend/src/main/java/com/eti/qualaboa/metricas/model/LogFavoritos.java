@@ -1,35 +1,34 @@
 package com.eti.qualaboa.metricas.model;
 
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
-import jakarta.persistence.Column;
+import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "log_favoritos")
 @Getter
 @Setter
-@Table(name = "metricas")
-@ToString
-public class Metricas {
+public class LogFavoritos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long cliques = 0L;
-    private Long totalFavoritos = 0L;
+    private LocalDateTime dataHoraFavorito;
 
-    @OneToOne(mappedBy = "metricas")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estabelecimento_id")
     private Estabelecimento estabelecimento;
 
 }

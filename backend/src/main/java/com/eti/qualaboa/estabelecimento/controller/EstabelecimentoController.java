@@ -5,6 +5,7 @@ import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
+import com.eti.qualaboa.metricas.dto.RelatorioCliquesDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,38 @@ public class EstabelecimentoController {
         Estabelecimento estabelecimento = service.buscarPorId(id);
         EstabelecimentoResponseDTO responseDTO = new EstabelecimentoResponseDTO(estabelecimento);
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("buscar/{id}")
+    public ResponseEntity<EstabelecimentoResponseDTO> buscarEstabelecimento(@PathVariable Long id) {
+        Estabelecimento estabelecimento = service.buscarPorEstabelecimento(id);
+        EstabelecimentoResponseDTO responseDTO = new EstabelecimentoResponseDTO(estabelecimento);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("buscarNome")
+    public ResponseEntity<EstabelecimentoResponseDTO> buscarEstabelecimentoPeloNome(@RequestParam String nomeEstabelecimento) {
+        Estabelecimento estabelecimento = service.buscarPorNome(nomeEstabelecimento);
+        EstabelecimentoResponseDTO responseDTO = new EstabelecimentoResponseDTO(estabelecimento);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("/{id}/cliques/relatorio")
+    public ResponseEntity<RelatorioCliquesDTO> getRelatorioDeCliques(@PathVariable Long id) {
+        RelatorioCliquesDTO relatorio = service.buscarRelatorioDeCliques(id);
+        return ResponseEntity.ok(relatorio);
+    }
+
+    @GetMapping("/{id}/favoritos/relatorio")
+    public ResponseEntity<RelatorioCliquesDTO> getRelatorioDeFavoritos(@PathVariable Long id) {
+        RelatorioCliquesDTO relatorio = service.buscarRelatorioDeFavoritos(id);
+        return ResponseEntity.ok(relatorio);
+    }
+
+    @GetMapping("/{id}/busca/relatorio")
+    public ResponseEntity<RelatorioCliquesDTO> getRelatorioDeBusca(@PathVariable Long id) {
+        RelatorioCliquesDTO relatorio = service.buscarRelatorioDeBusca(id);
+        return ResponseEntity.ok(relatorio);
     }
 
     @PutMapping("/{id}")

@@ -31,6 +31,10 @@ public class Estabelecimento {
     private Long idEstabelecimento;
 
     private String nome;
+
+    @Column(name = "nome_normalizado")
+    private String nomeNormalizado;
+
     private String senha;
     private String email;
     private String categoria;
