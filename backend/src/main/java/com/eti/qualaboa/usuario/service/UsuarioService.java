@@ -3,6 +3,7 @@ package com.eti.qualaboa.usuario.service;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
+import com.eti.qualaboa.metricas.service.MetricasService;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import com.eti.qualaboa.usuario.dto.UsuarioRequestDTO;
@@ -32,6 +33,7 @@ public class UsuarioService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final EstabelecimentoService estabelecimentoService;
+    private final MetricasService metricasService;
 
     @Transactional
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO requestDTO){
@@ -90,8 +92,13 @@ public class UsuarioService {
     @Transactional
     public HttpStatus favoritarEstabelecimento( Long userID, Long estabelecimentoID){
         Usuario user = findUserById(userID);
-        Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
-        user.getFavoritos().add(estabelecimento);
+        Estabelecimento estabelecimento = estabelecimentoService.buscarPorEstabelecimento(estabelecimentoID);
+        boolean addFavorito = user.getFavoritos().add(estabelecimento);
+
+        if (addFavorito) {
+            metricasService.registrarFavorito(userID);
+        }
+
         repository.save(user);
         return HttpStatus.NO_CONTENT;
     }
@@ -110,7 +117,7 @@ public class UsuarioService {
     @Transactional
     public HttpStatus excluirFavoritos(Long userID, Long estabelecimentoID){
         Usuario user = findUserById(userID);
-        Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
+        Estabelecimento estabelecimento = estabelecimentoService.buscarPorEstabelecimento(estabelecimentoID);
         user.getFavoritos().remove(estabelecimento);
         repository.save(user);
         return HttpStatus.NO_CONTENT;

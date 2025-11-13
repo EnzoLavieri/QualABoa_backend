@@ -17,10 +17,15 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -36,20 +41,35 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST , "/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST , "/auth/login/estabelecimento").permitAll()
-                .requestMatchers(HttpMethod.POST , "/api/usuarios").permitAll()
-                .requestMatchers(HttpMethod.POST, "/estabelecimentos").permitAll()
-                  .requestMatchers("/v3/api-docs/**").permitAll()
-                  .requestMatchers("/swagger-ui/**").permitAll()
-                  .requestMatchers("/swagger-ui.html").permitAll()
-                .anyRequest().authenticated())
+        return  http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST , "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST , "/auth/login/estabelecimento").permitAll()
+                        .requestMatchers(HttpMethod.POST , "/api/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/estabelecimentos").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .build();
+    }
 
-        return http.build();
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
