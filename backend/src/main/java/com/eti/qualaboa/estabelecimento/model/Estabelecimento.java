@@ -4,6 +4,7 @@ import com.eti.qualaboa.config.dto.LoginRequest;
 import com.eti.qualaboa.endereco.Endereco;
 import com.eti.qualaboa.evento.model.Evento;
 import com.eti.qualaboa.cupom.model.Cupom;
+import com.eti.qualaboa.metricas.model.Metricas;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +31,10 @@ public class Estabelecimento {
     private Long idEstabelecimento;
 
     private String nome;
+
+    @Column(name = "nome_normalizado")
+    private String nomeNormalizado;
+
     private String senha;
     private String email;
     private String categoria;
@@ -91,11 +96,22 @@ public class Estabelecimento {
     @ManyToMany(mappedBy = "favoritos", fetch = FetchType.LAZY)
     private Set<Usuario> favoritadoPorUsuarios;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "metricas_id")
+    private Metricas metricas;
+
     public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(loginRequest.password(), this.senha);
     }
 
     public Object getId() {
         return  this.getIdEstabelecimento();
+    }
+
+    public Metricas getMetricas() {
+        if (this.metricas == null) {
+            this.setMetricas(new Metricas());
+        }
+        return this.metricas;
     }
 }
