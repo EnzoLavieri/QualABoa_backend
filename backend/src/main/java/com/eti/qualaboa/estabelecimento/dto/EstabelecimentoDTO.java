@@ -23,4 +23,5 @@ public class EstabelecimentoDTO {
     private Double latitude;
     private Double longitude;
     private String enderecoFormatado;
+    private String fotoUrl;
 }

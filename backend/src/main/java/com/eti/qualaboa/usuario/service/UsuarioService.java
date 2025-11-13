@@ -3,6 +3,7 @@ package com.eti.qualaboa.usuario.service;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
+import com.eti.qualaboa.metricas.service.MetricasService;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import com.eti.qualaboa.usuario.dto.UsuarioRequestDTO;
@@ -32,19 +33,22 @@ public class UsuarioService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final EstabelecimentoService estabelecimentoService;
+    private final MetricasService metricasService;
 
     @Transactional
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO requestDTO){
 
-       if (repository.findByEmail(requestDTO.getEmail()).isPresent()) {
-           throw new RuntimeException("Email já cadastrado");
-       }
-
         Usuario user = new Usuario();
         user.setNome(requestDTO.getNome());
-        user.setEmail(requestDTO.getEmail());
+        user.setEmail(requestDTO.getEmail().toLowerCase());
         user.setSenha(passwordEncoder.encode(requestDTO.getSenha()));
         user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
+
+        user.setFotoUrl("https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png");
+
+        if (repository.findByEmail(requestDTO.getEmail().toLowerCase()).isPresent()) {
+            throw new RuntimeException("Email já cadastrado");
+        }
 
         if (requestDTO.getIdRole() == 2) {
             Role roleUser = roleRepository.findByNome("ADMIN").orElseThrow(() -> new RuntimeException("Role ADMIN não encontrada"));
@@ -56,13 +60,7 @@ public class UsuarioService {
 
         Usuario usuarioSalvo = repository.save(user);
 
-        return new UsuarioResponseDTO(
-                usuarioSalvo.getId(),
-                usuarioSalvo.getNome(),
-                usuarioSalvo.getEmail(),
-                usuarioSalvo.getSexo(),
-                usuarioSalvo.getPreferenciasUsuario()
-        );
+        return new UsuarioResponseDTO(usuarioSalvo);
     }
 
     public Usuario findUserById(Long userID){
@@ -83,6 +81,8 @@ public class UsuarioService {
             user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
         }
 
+        user.setFotoUrl(requestDTO.getFotoUrl());
+
         Usuario userAtualizado = repository.save(user);
 
         return new UsuarioUpdateResponseDTO(userAtualizado);
@@ -92,8 +92,13 @@ public class UsuarioService {
     @Transactional
     public HttpStatus favoritarEstabelecimento( Long userID, Long estabelecimentoID){
         Usuario user = findUserById(userID);
-        Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
-        user.getFavoritos().add(estabelecimento);
+        Estabelecimento estabelecimento = estabelecimentoService.buscarPorEstabelecimento(estabelecimentoID);
+        boolean addFavorito = user.getFavoritos().add(estabelecimento);
+
+        if (addFavorito) {
+            metricasService.registrarFavorito(userID);
+        }
+
         repository.save(user);
         return HttpStatus.NO_CONTENT;
     }
@@ -112,7 +117,7 @@ public class UsuarioService {
     @Transactional
     public HttpStatus excluirFavoritos(Long userID, Long estabelecimentoID){
         Usuario user = findUserById(userID);
-        Estabelecimento estabelecimento = estabelecimentoService.buscarPorId(estabelecimentoID);
+        Estabelecimento estabelecimento = estabelecimentoService.buscarPorEstabelecimento(estabelecimentoID);
         user.getFavoritos().remove(estabelecimento);
         repository.save(user);
         return HttpStatus.NO_CONTENT;

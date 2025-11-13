@@ -34,7 +34,7 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id){
         Usuario user = usuarioService.findUserById(id);
 
-        UsuarioResponseDTO userResponseDTO = new UsuarioResponseDTO(user.getId(), user.getNome(), user.getEmail(),user.getSexo(),user.getPreferenciasUsuario());
+        UsuarioResponseDTO userResponseDTO = new UsuarioResponseDTO(user);
 
         return ResponseEntity.ok(userResponseDTO);
     }
@@ -73,7 +73,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+//    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<HttpStatus> deletarUsuario(@PathVariable Long id){
         HttpStatus user = usuarioService.deletarUsuario(id);
         return  ResponseEntity.noContent().build();

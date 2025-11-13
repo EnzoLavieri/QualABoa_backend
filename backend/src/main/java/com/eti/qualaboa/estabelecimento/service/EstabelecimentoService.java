@@ -8,18 +8,23 @@ import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
 import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
-import lombok.RequiredArgsConstructor;
+import com.eti.qualaboa.metricas.dto.CliquesPorDiaDTO;
+import com.eti.qualaboa.metricas.dto.RelatorioCliquesDTO;
+import com.eti.qualaboa.metricas.model.Metricas;
+import com.eti.qualaboa.metricas.repository.LogBuscaPeloNomeRepository;
+import com.eti.qualaboa.metricas.repository.LogCliqueRepository;
+import com.eti.qualaboa.metricas.repository.LogFavoritosRepository;
+import com.eti.qualaboa.metricas.service.MetricasService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.repository.RoleRepository;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.eti.qualaboa.map.places.PlacesClient;
 
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,45 +40,23 @@ public class EstabelecimentoService {
     private final JdbcTemplate jdbcTemplate;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final MetricasService metricasService;
+    private final LogCliqueRepository logCliqueRepository;
+    private final LogFavoritosRepository logFavoritosRepository;
+    private final LogBuscaPeloNomeRepository logBuscaPeloNomeRepository;
 
     public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, PlacesClient placesClient, JdbcTemplate jdbcTemplate, RoleRepository roleRepository,
-        BCryptPasswordEncoder passwordEncoder) {
+                                  BCryptPasswordEncoder passwordEncoder, MetricasService metricasService, LogCliqueRepository logCliqueRepository, LogFavoritosRepository logFavoritosRepository, LogFavoritosRepository logFavoritosRepository1, LogBuscaPeloNomeRepository logBuscaPeloNomeRepository) {
         this.repositoryEstabelecimento = repositoryEstabelecimento;
         this.placesClient = placesClient;
         this.jdbcTemplate = jdbcTemplate;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.metricasService = metricasService;
+        this.logCliqueRepository = logCliqueRepository;
+        this.logFavoritosRepository = logFavoritosRepository1;
+        this.logBuscaPeloNomeRepository = logBuscaPeloNomeRepository;
     }
-
-    /**
-     * Cria um novo estabelecimento parceiro.
-     * Garante que o endereço não seja duplicado (idEndereco é removido antes do save).
-     */
-//    public EstabelecimentoDTO criar(Estabelecimento estabelecimento) {
-//        if (repositoryEstabelecimento.existsByEmail(estabelecimento.getEmail())) {
-//            throw new RuntimeException("E-mail já cadastrado");
-//        }
-
-    // Evita conflito de chave duplicada no endereço
-    // if (estabelecimento.getEndereco() != null) {
-    // estabelecimento.getEndereco().setIdEndereco(null);
-    // }
-
-    // Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
-    // jdbcTemplate.execute("""
-    // ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom
-    // geography(Point,4326);
-    // """);
-
-    // if (salvo.getLatitude() != null && salvo.getLongitude() != null) {
-    // jdbcTemplate.update("""
-    // UPDATE estabelecimentos
-    // SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)
-    // WHERE id_estabelecimento = ?
-    // """, salvo.getLongitude(), salvo.getLatitude(),
-    // salvo.getIdEstabelecimento());
-    // }
-    // return toDTO(salvo);
 
     public EstabelecimentoResponseDTO criar(EstabelecimentoRegisterDTO estabelecimentoRequest) {
         log.info("Recebido EstabelecimentoRegisterDTO para criação: {}", estabelecimentoRequest);
@@ -84,6 +67,7 @@ public class EstabelecimentoService {
         Estabelecimento estabelecimento = new Estabelecimento();
 
         estabelecimento.setNome(estabelecimentoRequest.getNome());
+        estabelecimento.setNomeNormalizado(normalizarNome(estabelecimentoRequest.getNome()));
         estabelecimento.setEmail(estabelecimentoRequest.getEmail());
         estabelecimento.setSenha(passwordEncoder.encode(estabelecimentoRequest.getSenha()));
         estabelecimento.setCategoria(estabelecimentoRequest.getCategoria());
@@ -96,6 +80,7 @@ public class EstabelecimentoService {
         estabelecimento.setEnderecoFormatado(estabelecimentoRequest.getEnderecoFormatado());
         estabelecimento.setEndereco(estabelecimentoRequest.getEndereco());
         estabelecimento.setConveniencias(estabelecimentoRequest.getConveniencias());
+        estabelecimento.setFotoUrl(estabelecimentoRequest.getFotoUrl());
 
         if (estabelecimentoRequest.getIdRole() == 3) {
             Role role = roleRepository.findByNome("ESTABELECIMENTO")
@@ -144,12 +129,26 @@ public class EstabelecimentoService {
     }
 
     /**
-     * Busca um estabelecimento pelo ID.
+     * Busca um estabelecimento pelo ID e conta os cliques.
      */
     public Estabelecimento buscarPorId(Long id) {
-        return repositoryEstabelecimento.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+        Estabelecimento estabelecimento = repositoryEstabelecimento.findById(id).orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+        metricasService.registrarClique(id);
+        repositoryEstabelecimento.save(estabelecimento);
+        return estabelecimento;
+    }
 
+    public Estabelecimento buscarPorEstabelecimento(Long id) {
+        Estabelecimento estabelecimento = repositoryEstabelecimento.findById(id).orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
+        return estabelecimento;
+    }
+
+    public Estabelecimento buscarPorNome(String nome) {
+        String nomeBusca = normalizarNome(nome);
+        log.info("Iniciando busca normalizada por: '{}'", nomeBusca);
+        Estabelecimento estabelecimento = repositoryEstabelecimento.findByNomeNormalizado(nomeBusca).orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado Controller"));
+        metricasService.registrarBuscaPeloNome(nome);
+        return estabelecimento;
     }
 
     /**
@@ -170,6 +169,7 @@ public class EstabelecimentoService {
         existente.setParceiro(dto.getParceiro());
         existente.setPlaceId(dto.getPlaceId());
         existente.setEnderecoFormatado(dto.getEnderecoFormatado());
+        existente.setFotoUrl(dto.getFotoUrl());
 
         // Atualiza ou cria o endereço
         if (dto.getEndereco() != null) {
@@ -222,6 +222,21 @@ public class EstabelecimentoService {
         return toDTO(est);
     }
 
+    public RelatorioCliquesDTO buscarRelatorioDeCliques(Long idEstabelecimento) {
+        List<CliquesPorDiaDTO> detalhamento = logCliqueRepository.findCliquesAgrupadosPorDia(idEstabelecimento);
+        return new RelatorioCliquesDTO(detalhamento);
+    }
+
+    public RelatorioCliquesDTO buscarRelatorioDeFavoritos(Long idEstabelecimento) {
+        List<CliquesPorDiaDTO> detalhamento = logFavoritosRepository.findFavoritosAgrupadosPorDia(idEstabelecimento);
+        return new RelatorioCliquesDTO(detalhamento);
+    }
+
+    public RelatorioCliquesDTO buscarRelatorioDeBusca(Long idEstabelecimento) {
+        List<CliquesPorDiaDTO> detalhamento = logBuscaPeloNomeRepository.findBuscasAgrupadasPorDia(idEstabelecimento);
+        return new RelatorioCliquesDTO(detalhamento);
+    }
+
     @Transactional(readOnly = true)
     public List<CupomDTO> listarCuponsPorEstabelecimento(Long idEstabelecimento) {
         Estabelecimento estabelecimento = repositoryEstabelecimento.findById(idEstabelecimento)
@@ -261,7 +276,16 @@ public class EstabelecimentoService {
                 .latitude(e.getLatitude())
                 .longitude(e.getLongitude())
                 .enderecoFormatado(e.getEnderecoFormatado())
+                .fotoUrl(e.getFotoUrl())
                 .build();
     }
 
+    public String normalizarNome(String nome) {
+        if (nome == null) {
+            return null;
+        }
+        String nomeSemAcento = Normalizer.normalize(nome, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return nomeSemAcento.toUpperCase().trim();
+    }
 }

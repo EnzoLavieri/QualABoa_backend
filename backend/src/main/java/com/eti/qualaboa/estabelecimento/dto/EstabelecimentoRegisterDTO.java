@@ -21,6 +21,7 @@ public class EstabelecimentoRegisterDTO {
     private String placeId;
     private Double latitude;
     private Double longitude;
+    private String fotoUrl;
 
     @Column(length = 1000)
     private String enderecoFormatado;

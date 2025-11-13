@@ -41,7 +41,7 @@ public class TokenController {
             throw new BadCredentialsException("email ou senha inválidos");
         }
 
-        var expiresIn = 300L;
+        var expiresIn = 84000L;
         var scope = user.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(" "));
 
         var claims = JwtClaimsSet.builder()
@@ -53,7 +53,11 @@ public class TokenController {
                 .build();
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-        return  ResponseEntity.ok(new LoginResponse(user.get().getId(), jwtValue,expiresIn));
+        return  ResponseEntity.ok(new LoginResponse(user.get().getId(),
+                jwtValue,
+                expiresIn,
+                user.get().getFotoUrl()
+        ));
     }
 
     @PostMapping("/login/estabelecimento")
@@ -65,7 +69,7 @@ public class TokenController {
             throw new BadCredentialsException("email ou senha inválidos");
         }
 
-        var expiresIn = 300L;
+        var expiresIn = 86400L;
         var scope = estabelecimento.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(" "));
 
         var claims = JwtClaimsSet.builder()
@@ -77,6 +81,10 @@ public class TokenController {
                 .build();
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-        return  ResponseEntity.ok(new LoginResponse(estabelecimento.get().getIdEstabelecimento(), jwtValue,expiresIn));
+        return  ResponseEntity.ok(new LoginResponse(estabelecimento.get().getIdEstabelecimento(),
+                jwtValue,
+                expiresIn,
+                estabelecimento.get().getFotoUrl()
+        ));
     }
 }

@@ -15,12 +15,23 @@ public class UsuarioResponseDTO {
     private String email;
     private Sexo sexo;
     private List<String> preferenciasUsuario;
+    private String fotoUrl;
 
-    public UsuarioResponseDTO(Long id, String nome, String email, Sexo sexo, List<String> preferenciasUsuario) {
+    public UsuarioResponseDTO(Long id, String nome, String email, Sexo sexo,
+                              List<String> preferenciasUsuario, String fotoUrl) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.sexo = sexo;
         this.preferenciasUsuario = preferenciasUsuario;
+        this.fotoUrl = fotoUrl;
+    }
+
+    public UsuarioResponseDTO(Usuario usuario) {
+        this.id = usuario.getId();
+        this.nome = usuario.getNome();
+        this.email = usuario.getEmail();
+        this.preferenciasUsuario = usuario.getPreferenciasUsuario();
+        this.fotoUrl = usuario.getFotoUrl();
     }
 }
