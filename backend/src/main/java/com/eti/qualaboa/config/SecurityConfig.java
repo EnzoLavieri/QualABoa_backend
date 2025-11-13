@@ -41,26 +41,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers(HttpMethod.POST , "/auth/login").permitAll()
-                .requestMatchers(HttpMethod.POST , "/auth/login/estabelecimento").permitAll()
-                .requestMatchers(HttpMethod.POST , "/api/usuarios").permitAll()
-                .requestMatchers(HttpMethod.POST, "/estabelecimentos").permitAll()
-                .anyRequest().authenticated()).oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults())
-                )
+        return  http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                  .requestMatchers("/v3/api-docs/**").permitAll()
-                  .requestMatchers("/swagger-ui/**").permitAll()
-                  .requestMatchers("/swagger-ui.html").permitAll()
-                .anyRequest().authenticated()
-
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        return http.build();
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST , "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST , "/auth/login/estabelecimento").permitAll()
+                        .requestMatchers(HttpMethod.POST , "/api/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/estabelecimentos").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .build();
     }
 
     @Bean
