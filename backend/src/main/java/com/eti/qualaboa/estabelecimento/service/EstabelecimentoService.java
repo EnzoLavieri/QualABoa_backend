@@ -96,6 +96,7 @@ public class EstabelecimentoService {
         estabelecimento.setEnderecoFormatado(estabelecimentoRequest.getEnderecoFormatado());
         estabelecimento.setEndereco(estabelecimentoRequest.getEndereco());
         estabelecimento.setConveniencias(estabelecimentoRequest.getConveniencias());
+        estabelecimento.setFotoUrl(estabelecimentoRequest.getFotoUrl());
 
         if (estabelecimentoRequest.getIdRole() == 3) {
             Role role = roleRepository.findByNome("ESTABELECIMENTO")
@@ -170,6 +171,7 @@ public class EstabelecimentoService {
         existente.setParceiro(dto.getParceiro());
         existente.setPlaceId(dto.getPlaceId());
         existente.setEnderecoFormatado(dto.getEnderecoFormatado());
+        existente.setFotoUrl(dto.getFotoUrl());
 
         // Atualiza ou cria o endereço
         if (dto.getEndereco() != null) {
@@ -261,6 +263,7 @@ public class EstabelecimentoService {
                 .latitude(e.getLatitude())
                 .longitude(e.getLongitude())
                 .enderecoFormatado(e.getEnderecoFormatado())
+                .fotoUrl(e.getFotoUrl())
                 .build();
     }
 
