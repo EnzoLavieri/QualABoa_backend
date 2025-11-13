@@ -14,5 +14,6 @@ public class UsuarioUpdateRequestDTO {
     private String nome;
 
     private List<String> preferenciasUsuario;
+    private String fotoUrl;
 
 }

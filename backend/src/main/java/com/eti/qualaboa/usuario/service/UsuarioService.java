@@ -42,6 +42,8 @@ public class UsuarioService {
         user.setSenha(passwordEncoder.encode(requestDTO.getSenha()));
         user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
 
+        user.setFotoUrl("https://w7.pngwing.com/pngs/1000/665/png-transparent-computer-icons-profile-s-free-angle-sphere-profile-cliparts-free.png");
+
         if (repository.findByEmail(requestDTO.getEmail().toLowerCase()).isPresent()) {
             throw new RuntimeException("Email já cadastrado");
         }
@@ -56,13 +58,7 @@ public class UsuarioService {
 
         Usuario usuarioSalvo = repository.save(user);
 
-        return new UsuarioResponseDTO(
-                usuarioSalvo.getId(),
-                usuarioSalvo.getNome(),
-                usuarioSalvo.getEmail(),
-                usuarioSalvo.getSexo(),
-                usuarioSalvo.getPreferenciasUsuario()
-        );
+        return new UsuarioResponseDTO(usuarioSalvo);
     }
 
     public Usuario findUserById(Long userID){
@@ -82,6 +78,8 @@ public class UsuarioService {
         if (requestDTO.getPreferenciasUsuario() != null) {
             user.setPreferenciasUsuario(requestDTO.getPreferenciasUsuario());
         }
+
+        user.setFotoUrl(requestDTO.getFotoUrl());
 
         Usuario userAtualizado = repository.save(user);
 

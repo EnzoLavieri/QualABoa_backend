@@ -34,7 +34,7 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id){
         Usuario user = usuarioService.findUserById(id);
 
-        UsuarioResponseDTO userResponseDTO = new UsuarioResponseDTO(user.getId(), user.getNome(), user.getEmail(),user.getSexo(),user.getPreferenciasUsuario());
+        UsuarioResponseDTO userResponseDTO = new UsuarioResponseDTO(user);
 
         return ResponseEntity.ok(userResponseDTO);
     }
