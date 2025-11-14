@@ -93,12 +93,8 @@ public class UsuarioService {
     public HttpStatus favoritarEstabelecimento( Long userID, Long estabelecimentoID){
         Usuario user = findUserById(userID);
         Estabelecimento estabelecimento = estabelecimentoService.buscarPorEstabelecimento(estabelecimentoID);
-        boolean addFavorito = user.getFavoritos().add(estabelecimento);
-
-        if (addFavorito) {
-            metricasService.registrarFavorito(userID);
-        }
-
+        user.getFavoritos().add(estabelecimento);
+        metricasService.registrarFavorito(estabelecimentoID);
         repository.save(user);
         return HttpStatus.NO_CONTENT;
     }

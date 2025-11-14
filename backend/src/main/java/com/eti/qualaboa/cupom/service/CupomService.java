@@ -28,6 +28,11 @@ public class CupomService {
                 .orElseThrow(() -> new RuntimeException("Cupom não encontrado"));
     }
 
+    public List<CupomDTO> buscarCuponsPorEstabelecimento(Long idEstabelecimento) {
+        List<Cupom> cupons = cupomRepository.findByEstabelecimentoIdEstabelecimento(idEstabelecimento);
+        return cupons.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
     public CupomDTO criarCupom(CupomDTO dto) {
         Estabelecimento estabelecimento = estabelecimentoRepository.findById(dto.getIdEstabelecimento())
                 .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
@@ -71,6 +76,12 @@ public class CupomService {
     //gera código aleatório
     private String gerarCodigoCupom() {
         return "QLB-" + java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+    }
+
+    public void validarCupom(String codigo) {
+        Cupom cupom = cupomRepository.findByCodigo(codigo).orElseThrow(() -> new RuntimeException("Cupom não encontrado"));
+        cupom.setQuantidadeUsada(cupom.getQuantidadeUsada() + 1);
+        cupomRepository.save(cupom);
     }
 
 
