@@ -1,0 +1,401 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EstabelecimentoService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.eti.qualaboa.estabelecimento.service</a>
+</div>
+
+<h1>Coverage Summary for Class: EstabelecimentoService (com.eti.qualaboa.estabelecimento.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EstabelecimentoService</td>
+<td class="coverageStat">
+  <span class="percent">
+    18,2%
+  </span>
+  <span class="absValue">
+    (2/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5,4%
+  </span>
+  <span class="absValue">
+    (7/130)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EstabelecimentoService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    18,2%
+  </span>
+  <span class="absValue">
+    (2/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5,4%
+  </span>
+  <span class="absValue">
+    (7/130)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.estabelecimento.service;
+&nbsp;
+&nbsp;import com.eti.qualaboa.cupom.dto.CupomDTO;
+&nbsp;import com.eti.qualaboa.cupom.model.Cupom;
+&nbsp;import com.eti.qualaboa.endereco.Endereco;
+&nbsp;import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoDTO;
+&nbsp;import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoRegisterDTO;
+&nbsp;import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
+&nbsp;import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
+&nbsp;import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.jdbc.core.JdbcTemplate;
+&nbsp;import com.eti.qualaboa.usuario.domain.entity.Role;
+&nbsp;import com.eti.qualaboa.usuario.repository.RoleRepository;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;import com.eti.qualaboa.map.places.PlacesClient;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Transactional
+&nbsp;public class EstabelecimentoService {
+&nbsp;
+&nbsp;    private final EstabelecimentoRepository repositoryEstabelecimento;
+&nbsp;    private final PlacesClient placesClient;
+&nbsp;    private final JdbcTemplate jdbcTemplate;
+&nbsp;    private final RoleRepository roleRepository;
+&nbsp;    private final BCryptPasswordEncoder passwordEncoder;
+&nbsp;
+&nbsp;    public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, PlacesClient placesClient, JdbcTemplate jdbcTemplate, RoleRepository roleRepository,
+<b class="fc">&nbsp;        BCryptPasswordEncoder passwordEncoder) {</b>
+<b class="fc">&nbsp;        this.repositoryEstabelecimento = repositoryEstabelecimento;</b>
+<b class="fc">&nbsp;        this.placesClient = placesClient;</b>
+<b class="fc">&nbsp;        this.jdbcTemplate = jdbcTemplate;</b>
+<b class="fc">&nbsp;        this.roleRepository = roleRepository;</b>
+<b class="fc">&nbsp;        this.passwordEncoder = passwordEncoder;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Cria um novo estabelecimento parceiro.
+&nbsp;     * Garante que o endereço não seja duplicado (idEndereco é removido antes do save).
+&nbsp;     */
+&nbsp;//    public EstabelecimentoDTO criar(Estabelecimento estabelecimento) {
+&nbsp;//        if (repositoryEstabelecimento.existsByEmail(estabelecimento.getEmail())) {
+&nbsp;//            throw new RuntimeException(&quot;E-mail já cadastrado&quot;);
+&nbsp;//        }
+&nbsp;
+&nbsp;    // Evita conflito de chave duplicada no endereço
+&nbsp;    // if (estabelecimento.getEndereco() != null) {
+&nbsp;    // estabelecimento.getEndereco().setIdEndereco(null);
+&nbsp;    // }
+&nbsp;
+&nbsp;    // Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
+&nbsp;    // jdbcTemplate.execute(&quot;&quot;&quot;
+&nbsp;    // ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom
+&nbsp;    // geography(Point,4326);
+&nbsp;    // &quot;&quot;&quot;);
+&nbsp;
+&nbsp;    // if (salvo.getLatitude() != null &amp;&amp; salvo.getLongitude() != null) {
+&nbsp;    // jdbcTemplate.update(&quot;&quot;&quot;
+&nbsp;    // UPDATE estabelecimentos
+&nbsp;    // SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)
+&nbsp;    // WHERE id_estabelecimento = ?
+&nbsp;    // &quot;&quot;&quot;, salvo.getLongitude(), salvo.getLatitude(),
+&nbsp;    // salvo.getIdEstabelecimento());
+&nbsp;    // }
+&nbsp;    // return toDTO(salvo);
+&nbsp;
+&nbsp;    public EstabelecimentoResponseDTO criar(EstabelecimentoRegisterDTO estabelecimentoRequest) {
+<b class="nc">&nbsp;        log.info(&quot;Recebido EstabelecimentoRegisterDTO para criação: {}&quot;, estabelecimentoRequest);</b>
+<b class="nc">&nbsp;        if (repositoryEstabelecimento.existsByEmail(estabelecimentoRequest.getEmail())) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;E-mail já cadastrado&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Estabelecimento estabelecimento = new Estabelecimento();</b>
+&nbsp;
+<b class="nc">&nbsp;        estabelecimento.setNome(estabelecimentoRequest.getNome());</b>
+<b class="nc">&nbsp;        estabelecimento.setEmail(estabelecimentoRequest.getEmail());</b>
+<b class="nc">&nbsp;        estabelecimento.setSenha(passwordEncoder.encode(estabelecimentoRequest.getSenha()));</b>
+<b class="nc">&nbsp;        estabelecimento.setCategoria(estabelecimentoRequest.getCategoria());</b>
+<b class="nc">&nbsp;        estabelecimento.setDescricao(estabelecimentoRequest.getDescricao());</b>
+<b class="nc">&nbsp;        estabelecimento.setTelefone(estabelecimentoRequest.getTelefone());</b>
+<b class="nc">&nbsp;        estabelecimento.setParceiro(estabelecimentoRequest.getParceiro());</b>
+<b class="nc">&nbsp;        estabelecimento.setPlaceId(estabelecimentoRequest.getPlaceId());</b>
+<b class="nc">&nbsp;        estabelecimento.setLatitude(estabelecimentoRequest.getLatitude());</b>
+<b class="nc">&nbsp;        estabelecimento.setLongitude(estabelecimentoRequest.getLongitude());</b>
+<b class="nc">&nbsp;        estabelecimento.setEnderecoFormatado(estabelecimentoRequest.getEnderecoFormatado());</b>
+<b class="nc">&nbsp;        estabelecimento.setEndereco(estabelecimentoRequest.getEndereco());</b>
+<b class="nc">&nbsp;        estabelecimento.setConveniencias(estabelecimentoRequest.getConveniencias());</b>
+&nbsp;
+<b class="nc">&nbsp;        if (estabelecimentoRequest.getIdRole() == 3) {</b>
+<b class="nc">&nbsp;            Role role = roleRepository.findByNome(&quot;ESTABELECIMENTO&quot;)</b>
+<b class="nc">&nbsp;                    .orElseThrow(() -&gt; new RuntimeException(&quot;Role ESTABELECIMENTO não encontrada&quot;));</b>
+<b class="nc">&nbsp;            estabelecimento.setRoles(Set.of(role));</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);</b>
+&nbsp;
+<b class="nc">&nbsp;        jdbcTemplate.execute(&quot;&quot;&quot;</b>
+&nbsp;                    ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom geography(Point,4326);
+&nbsp;                &quot;&quot;&quot;);
+&nbsp;
+<b class="nc">&nbsp;        if (salvo.getLatitude() != null &amp;&amp; salvo.getLongitude() != null) {</b>
+<b class="nc">&nbsp;            jdbcTemplate.update(&quot;&quot;&quot;</b>
+&nbsp;                        UPDATE estabelecimentos
+&nbsp;                        SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)
+&nbsp;                        WHERE id_estabelecimento = ?
+<b class="nc">&nbsp;                    &quot;&quot;&quot;, salvo.getLongitude(), salvo.getLatitude(), salvo.getIdEstabelecimento());</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return new EstabelecimentoResponseDTO(</b>
+<b class="nc">&nbsp;                salvo.getIdEstabelecimento(),</b>
+<b class="nc">&nbsp;                salvo.getNome(),</b>
+<b class="nc">&nbsp;                salvo.getEmail(),</b>
+<b class="nc">&nbsp;                salvo.getCategoria(),</b>
+<b class="nc">&nbsp;                salvo.getDescricao(),</b>
+<b class="nc">&nbsp;                salvo.getTelefone(),</b>
+<b class="nc">&nbsp;                salvo.getParceiro(),</b>
+<b class="nc">&nbsp;                salvo.getPlaceId(),</b>
+<b class="nc">&nbsp;                salvo.getLatitude(),</b>
+<b class="nc">&nbsp;                salvo.getLongitude(),</b>
+<b class="nc">&nbsp;                salvo.getEnderecoFormatado(),</b>
+<b class="nc">&nbsp;                salvo.getEndereco(),</b>
+<b class="nc">&nbsp;                salvo.getClassificacao(),</b>
+<b class="nc">&nbsp;                salvo.getConveniencias());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Lista todos os estabelecimentos cadastrados (parceiros).
+&nbsp;     */
+&nbsp;    public List&lt;EstabelecimentoDTO&gt; listarTodos() {
+<b class="nc">&nbsp;        return repositoryEstabelecimento.findAll()</b>
+<b class="nc">&nbsp;                .stream().map(this::toDTO)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Busca um estabelecimento pelo ID.
+&nbsp;     */
+&nbsp;    public Estabelecimento buscarPorId(Long id) {
+<b class="nc">&nbsp;        return repositoryEstabelecimento.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Estabelecimento não encontrado&quot;));</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Atualiza as informações de um estabelecimento existente.
+&nbsp;     */
+&nbsp;    public EstabelecimentoDTO atualizar(Long id, Estabelecimento dto) {
+<b class="nc">&nbsp;        Estabelecimento existente = repositoryEstabelecimento.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Estabelecimento não encontrado&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        existente.setNome(dto.getNome());</b>
+<b class="nc">&nbsp;        existente.setCategoria(dto.getCategoria());</b>
+<b class="nc">&nbsp;        existente.setDescricao(dto.getDescricao());</b>
+<b class="nc">&nbsp;        existente.setTelefone(dto.getTelefone());</b>
+<b class="nc">&nbsp;        existente.setConveniencias(dto.getConveniencias());</b>
+<b class="nc">&nbsp;        existente.setClassificacao(dto.getClassificacao());</b>
+<b class="nc">&nbsp;        existente.setLatitude(dto.getLatitude());</b>
+<b class="nc">&nbsp;        existente.setLongitude(dto.getLongitude());</b>
+<b class="nc">&nbsp;        existente.setParceiro(dto.getParceiro());</b>
+<b class="nc">&nbsp;        existente.setPlaceId(dto.getPlaceId());</b>
+<b class="nc">&nbsp;        existente.setEnderecoFormatado(dto.getEnderecoFormatado());</b>
+&nbsp;
+&nbsp;        // Atualiza ou cria o endereço
+<b class="nc">&nbsp;        if (dto.getEndereco() != null) {</b>
+<b class="nc">&nbsp;            Endereco end = existente.getEndereco();</b>
+<b class="nc">&nbsp;            if (end == null) {</b>
+<b class="nc">&nbsp;                existente.setEndereco(dto.getEndereco());</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                end.setRua(dto.getEndereco().getRua());</b>
+<b class="nc">&nbsp;                end.setNumero(dto.getEndereco().getNumero());</b>
+<b class="nc">&nbsp;                end.setBairro(dto.getEndereco().getBairro());</b>
+<b class="nc">&nbsp;                end.setCidade(dto.getEndereco().getCidade());</b>
+<b class="nc">&nbsp;                end.setEstado(dto.getEndereco().getEstado());</b>
+<b class="nc">&nbsp;                end.setCep(dto.getEndereco().getCep());</b>
+<b class="nc">&nbsp;                end.setLatitude(dto.getEndereco().getLatitude());</b>
+<b class="nc">&nbsp;                end.setLongitude(dto.getEndereco().getLongitude());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Estabelecimento atualizado = repositoryEstabelecimento.save(existente);</b>
+<b class="nc">&nbsp;        return toDTO(atualizado);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Exclui um estabelecimento pelo ID.
+&nbsp;     */
+&nbsp;    public void deletar(Long id) {
+<b class="nc">&nbsp;        repositoryEstabelecimento.deleteById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public EstabelecimentoDTO vincularComPlace(Long id, String placeId) {
+<b class="nc">&nbsp;        Estabelecimento est = repositoryEstabelecimento.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Estabelecimento não encontrado&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; details = placesClient.placeDetails(placeId);</b>
+<b class="nc">&nbsp;        Map&lt;String, Object&gt; result = (Map&lt;String, Object&gt;) details.get(&quot;result&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        est.setPlaceId(placeId);</b>
+<b class="nc">&nbsp;        est.setNome((String) result.get(&quot;name&quot;));</b>
+<b class="nc">&nbsp;        est.setEnderecoFormatado((String) result.get(&quot;formatted_address&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        if (result.get(&quot;geometry&quot;) != null) {</b>
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; geometry = (Map&lt;String, Object&gt;) result.get(&quot;geometry&quot;);</b>
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; location = (Map&lt;String, Object&gt;) geometry.get(&quot;location&quot;);</b>
+<b class="nc">&nbsp;            est.setLatitude(((Number) location.get(&quot;lat&quot;)).doubleValue());</b>
+<b class="nc">&nbsp;            est.setLongitude(((Number) location.get(&quot;lng&quot;)).doubleValue());</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        est.setParceiro(true);</b>
+<b class="nc">&nbsp;        repositoryEstabelecimento.save(est);</b>
+<b class="nc">&nbsp;        return toDTO(est);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional(readOnly = true)
+&nbsp;    public List&lt;CupomDTO&gt; listarCuponsPorEstabelecimento(Long idEstabelecimento) {
+<b class="nc">&nbsp;        Estabelecimento estabelecimento = repositoryEstabelecimento.findById(idEstabelecimento)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Estabelecimento não encontrado&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        return estabelecimento.getCupons()</b>
+<b class="nc">&nbsp;                .stream()</b>
+<b class="nc">&nbsp;                .map(c -&gt; CupomDTO.builder()</b>
+<b class="nc">&nbsp;                        .idCupom(c.getIdCupom())</b>
+<b class="nc">&nbsp;                        .codigo(c.getCodigo())</b>
+<b class="nc">&nbsp;                        .descricao(c.getDescricao())</b>
+<b class="nc">&nbsp;                        .tipo(c.getTipo())</b>
+<b class="nc">&nbsp;                        .valor(c.getValor())</b>
+<b class="nc">&nbsp;                        .dataInicio(c.getDataInicio())</b>
+<b class="nc">&nbsp;                        .dataFim(c.getDataFim())</b>
+<b class="nc">&nbsp;                        .ativo(c.isAtivo())</b>
+<b class="nc">&nbsp;                        .quantidadeTotal(c.getQuantidadeTotal())</b>
+<b class="nc">&nbsp;                        .quantidadeUsada(c.getQuantidadeUsada())</b>
+<b class="nc">&nbsp;                        .idEstabelecimento(estabelecimento.getIdEstabelecimento())</b>
+<b class="nc">&nbsp;                        .build())</b>
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private EstabelecimentoDTO toDTO(Estabelecimento e) {
+<b class="nc">&nbsp;        return EstabelecimentoDTO.builder()</b>
+<b class="nc">&nbsp;                .idEstabelecimento(e.getIdEstabelecimento())</b>
+<b class="nc">&nbsp;                .nome(e.getNome())</b>
+<b class="nc">&nbsp;                .email(e.getEmail())</b>
+<b class="nc">&nbsp;                .categoria(e.getCategoria())</b>
+<b class="nc">&nbsp;                .descricao(e.getDescricao())</b>
+<b class="nc">&nbsp;                .telefone(e.getTelefone())</b>
+<b class="nc">&nbsp;                .endereco(e.getEndereco())</b>
+<b class="nc">&nbsp;                .classificacao(e.getClassificacao())</b>
+<b class="nc">&nbsp;                .conveniencias(e.getConveniencias())</b>
+<b class="nc">&nbsp;                .parceiro(e.getParceiro())</b>
+<b class="nc">&nbsp;                .placeId(e.getPlaceId())</b>
+<b class="nc">&nbsp;                .latitude(e.getLatitude())</b>
+<b class="nc">&nbsp;                .longitude(e.getLongitude())</b>
+<b class="nc">&nbsp;                .enderecoFormatado(e.getEnderecoFormatado())</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-11 22:30</div>
+</div>
+</body>
+</html>

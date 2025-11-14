@@ -8,6 +8,7 @@ import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
 import com.eti.qualaboa.map.places.PlacesClient;
+import com.eti.qualaboa.metricas.service.MetricasService;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +47,8 @@ public class EstabelecimentoServiceTest {
     private RoleRepository roleRepository;
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
+    @Mock
+    private MetricasService metricasService;
 
     // Injeta os mocks acima no serviço
     @InjectMocks
@@ -63,7 +66,7 @@ public class EstabelecimentoServiceTest {
         registerDTO.setNome("Bar Novo Teste");
         registerDTO.setEmail("novo@teste.com");
         registerDTO.setSenha("senha123");
-        registerDTO.setIdRole(3L); // ID 3 = ESTABELECIMENTO
+        registerDTO.setIdRole(3L);
         registerDTO.setLatitude(-23.0);
         registerDTO.setLongitude(-51.0);
 
@@ -157,13 +160,11 @@ public class EstabelecimentoServiceTest {
     @Test
     @DisplayName("Deve buscar por ID com sucesso")
     void buscarPorId_Sucesso() {
-        // --- ARRANGE ---
         when(repositoryEstabelecimento.findById(1L)).thenReturn(Optional.of(mockEstabelecimento));
 
-        // --- ACT ---
+        doNothing().when(metricasService).registrarClique(1L);
         Estabelecimento resultado = estabelecimentoService.buscarPorId(1L);
 
-        // --- ASSERT ---
         assertThat(resultado).isNotNull();
         assertThat(resultado.getNome()).isEqualTo("Bar Já Salvo");
     }
@@ -171,10 +172,8 @@ public class EstabelecimentoServiceTest {
     @Test
     @DisplayName("Deve falhar ao buscar ID que não existe")
     void buscarPorId_Falha_NaoEncontrado() {
-        // --- ARRANGE ---
         when(repositoryEstabelecimento.findById(99L)).thenReturn(Optional.empty());
 
-        // --- ACT & ASSERT ---
         assertThatThrownBy(() -> estabelecimentoService.buscarPorId(99L))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Estabelecimento não encontrado");

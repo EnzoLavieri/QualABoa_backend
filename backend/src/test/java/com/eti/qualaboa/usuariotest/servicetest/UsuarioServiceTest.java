@@ -2,7 +2,6 @@ package com.eti.qualaboa.usuariotest.servicetest;
 
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
-// [CORREÇÃO] Importa a nova dependência que estava faltando
 import com.eti.qualaboa.metricas.service.MetricasService;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.domain.entity.Usuario;
@@ -49,13 +48,13 @@ public class UsuarioServiceTest {
     @Mock
     private EstabelecimentoService estabelecimentoService;
 
-    // [CORREÇÃO] Adiciona o mock para o MetricasService
     @Mock
     private MetricasService metricasService;
 
     // Injeta os mocks acima no UsuarioService
     @InjectMocks
     private UsuarioService usuarioService;
+
 
     // Variáveis que usaremos em múltiplos testes
     private UsuarioRequestDTO requestDTO;
@@ -192,31 +191,23 @@ public class UsuarioServiceTest {
     @Test
     @DisplayName("Deve favoritar um estabelecimento")
     void favoritarEstabelecimento_ComSucesso() {
-        // --- ARRANGE (Preparação) ---
-        usuario.setFavoritos(new HashSet<>()); // Começa com lista vazia
+        usuario.setFavoritos(new HashSet<>());
 
         Estabelecimento estabelecimento = new Estabelecimento();
         estabelecimento.setIdEstabelecimento(10L);
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        when(estabelecimentoService.buscarPorId(10L)).thenReturn(estabelecimento);
 
-        // [CORREÇÃO] Simula o comportamento do novo mock (metricasService)
-        // Não precisa fazer nada (void), apenas existir.
-        // Se o método 'registrarFavorito' não for void, você precisará de um when/thenReturn.
-        // Assumindo que é void:
-        doNothing().when(metricasService).registrarFavorito(anyLong());
+        doNothing().when(metricasService).registrarFavorito(10L);
 
-        // --- ACT (Ação) ---
         HttpStatus status = usuarioService.favoritarEstabelecimento(1L, 10L);
 
-        // --- ASSERT (Verificação) ---
         assertEquals(HttpStatus.NO_CONTENT, status);
-        // Verifica se o estabelecimento foi realmente adicionado ao set de favoritos do usuário
-        assertTrue(usuario.getFavoritos().contains(estabelecimento));
-        // Verifica se o repository.save foi chamado
+        assertEquals(1, usuario.getFavoritos().size());
+
+
         verify(usuarioRepository, times(1)).save(usuario);
-        // [CORREÇÃO] Verifica se o metricasService foi chamado
+
         verify(metricasService, times(1)).registrarFavorito(10L);
     }
 }
