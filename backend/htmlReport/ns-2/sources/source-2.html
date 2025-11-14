@@ -1,0 +1,188 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > SecurityConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.eti.qualaboa.config</a>
+</div>
+
+<h1>Coverage Summary for Class: SecurityConfig (com.eti.qualaboa.config)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SecurityConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SecurityConfig$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">SecurityConfig$$SpringCGLIB$$FastClass$$0</td>
+  </tr>
+  <tr>
+    <td class="name">SecurityConfig$$SpringCGLIB$$FastClass$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.config;
+&nbsp;
+&nbsp;import com.nimbusds.jose.jwk.JWK;
+&nbsp;import com.nimbusds.jose.jwk.RSAKey;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.http.HttpMethod;
+&nbsp;import org.springframework.security.config.Customizer;
+&nbsp;import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+&nbsp;import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+&nbsp;import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+&nbsp;import org.springframework.security.config.http.SessionCreationPolicy;
+&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+&nbsp;import org.springframework.security.oauth2.jwt.JwtDecoder;
+&nbsp;import org.springframework.security.oauth2.jwt.JwtEncoder;
+&nbsp;import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+&nbsp;import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+&nbsp;import org.springframework.security.web.SecurityFilterChain;
+&nbsp;
+&nbsp;import java.security.interfaces.RSAPrivateKey;
+&nbsp;import java.security.interfaces.RSAPublicKey;
+&nbsp;
+&nbsp;@Configuration
+&nbsp;@EnableWebSecurity
+&nbsp;@EnableMethodSecurity
+<b class="fc">&nbsp;public class SecurityConfig {</b>
+&nbsp;
+&nbsp;    @Value(&quot;${jwt.public.key}&quot;)
+&nbsp;    private RSAPublicKey publicKey;
+&nbsp;
+&nbsp;    @Value(&quot;${jwt.private.key}&quot;)
+&nbsp;    private RSAPrivateKey privateKey;
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+&nbsp;
+<b class="fc">&nbsp;        http.authorizeHttpRequests(authorize -&gt; authorize</b>
+<b class="fc">&nbsp;                .requestMatchers(HttpMethod.POST , &quot;/auth/login&quot;).permitAll()</b>
+<b class="fc">&nbsp;                .requestMatchers(HttpMethod.POST , &quot;/auth/login/estabelecimento&quot;).permitAll()</b>
+<b class="fc">&nbsp;                .requestMatchers(HttpMethod.POST , &quot;/api/usuarios&quot;).permitAll()</b>
+<b class="fc">&nbsp;                .requestMatchers(HttpMethod.POST, &quot;/estabelecimentos&quot;).permitAll()</b>
+<b class="fc">&nbsp;                .anyRequest().authenticated())</b>
+<b class="fc">&nbsp;                .csrf(csrf -&gt; csrf.disable())</b>
+<b class="fc">&nbsp;                .oauth2ResourceServer(oauth2 -&gt; oauth2.jwt(Customizer.withDefaults()))</b>
+<b class="fc">&nbsp;                .sessionManagement(session -&gt; session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));</b>
+&nbsp;
+<b class="fc">&nbsp;        return http.build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    public JwtEncoder jwtEncoder() {
+<b class="fc">&nbsp;        JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(this.privateKey).build();</b>
+<b class="fc">&nbsp;        var jwts = new com.nimbusds.jose.jwk.source.ImmutableJWKSet&lt;&gt;(new com.nimbusds.jose.jwk.JWKSet(jwk));</b>
+<b class="fc">&nbsp;        return new NimbusJwtEncoder(jwts);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    public JwtDecoder jwtDecoder() {
+<b class="fc">&nbsp;        return NimbusJwtDecoder.withPublicKey(publicKey).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Bean
+&nbsp;    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+<b class="fc">&nbsp;        return new BCryptPasswordEncoder();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-11 22:30</div>
+</div>
+</body>
+</html>

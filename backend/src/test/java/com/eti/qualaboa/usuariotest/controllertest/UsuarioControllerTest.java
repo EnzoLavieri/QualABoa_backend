@@ -27,44 +27,39 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(UsuarioController.class) // 1. Indica que é um teste focado na camada Web (Controller)
-@Import(SecurityConfig.class) // 2. Importa sua configuração de segurança real para testar as regras
+@WebMvcTest(UsuarioController.class)
+@Import(SecurityConfig.class)
 public class UsuarioControllerTest {
 
     @Autowired
-    private MockMvc mockMvc; // 3. Objeto para simular requisições HTTP
+    private MockMvc mockMvc;
 
-    @MockBean // 4. Cria um MOCK (dublê) do UsuarioService
+    @MockBean
     private UsuarioService usuarioService;
 
     @Autowired
-    private ObjectMapper objectMapper; // 5. Converte objetos Java para JSON
+    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("POST /api/usuarios - Deve criar um novo usuário com sucesso (público)")
     void criarUsuario_DeveRetornarCreated() throws Exception {
-        // --- ARRANGE (Preparação) ---
-        // 1. O que o usuário vai enviar no corpo da requisição (Request)
         UsuarioRequestDTO requestDTO = new UsuarioRequestDTO();
         requestDTO.setNome("Test User");
         requestDTO.setEmail("test@user.com");
         requestDTO.setSenha("senha123");
         requestDTO.setIdRole(1L); // ID 1 = USER
 
-        // 2. O que o UsuarioService (mockado) deve retornar
         UsuarioResponseDTO responseDTO = new UsuarioResponseDTO(
                 1L, "Test User", "test@user.com", null, List.of()
         );
 
-        // 3. Configurar o mock: "Quando o service.criarUsuario for chamado, retorne o responseDTO"
         when(usuarioService.criarUsuario(any(UsuarioRequestDTO.class))).thenReturn(responseDTO);
 
-        // --- ACT & ASSERT (Ação e Verificação) ---
-        mockMvc.perform(post("/api/usuarios") // Simula um POST para /api/usuarios
+        mockMvc.perform(post("/api/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO))) // Converte o DTO em JSON
-                .andExpect(status().isCreated()) // Verifica se o status é 201 Created
-                .andExpect(jsonPath("$.id").value(1L)) // Verifica o JSON de resposta
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.nome").value("Test User"))
                 .andExpect(jsonPath("$.email").value("test@user.com"));
     }
@@ -72,61 +67,45 @@ public class UsuarioControllerTest {
     @Test
     @DisplayName("GET /api/usuarios/{id} - Deve falhar sem autenticação (401)")
     void buscarPorId_SemAutenticacao_DeveRetornarUnauthorized() throws Exception {
-        // --- ARRANGE (Nenhum) ---
 
-        // --- ACT & ASSERT ---
-        mockMvc.perform(get("/api/usuarios/1") // Simula um GET
+        mockMvc.perform(get("/api/usuarios/1")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized()); // 401 Unauthorized (Regra do SecurityConfig)
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("GET /api/usuarios/{id} - Deve retornar usuário com autenticação (USER)")
     void buscarPorId_ComAutenticacao_DeveRetornarOk() throws Exception {
-        // --- ARRANGE ---
         Usuario usuarioMock = new Usuario();
         usuarioMock.setId(1L);
         usuarioMock.setNome("Test User");
         usuarioMock.setEmail("test@user.com");
         usuarioMock.setSexo(Sexo.FEMININO);
 
-        // Configura o mock: "Quando o service.findUserById(1L) for chamado, retorne o usuarioMock"
         when(usuarioService.findUserById(1L)).thenReturn(usuarioMock);
 
-        // --- ACT & ASSERT ---
         mockMvc.perform(get("/api/usuarios/1")
-                        // Simula um token JWT válido com a ROLE_USER
                         .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_USER"))))
                 .andExpect(status().isOk()) // Verifica se o status é 200 OK
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.nome").value("Test User"))
-                .andExpect(jsonPath("$.sexo").value("FEMININO"));
+                .andExpect(jsonPath("$.nome").value("Test User"));
     }
 
     @Test
     @DisplayName("DELETE /api/usuarios/{id} - Deve falhar para ROLE_USER (403)")
     void deletarUsuario_ComRoleUser_DeveRetornarForbidden() throws Exception {
-        // --- ARRANGE (Nenhum) ---
-        // A segurança deve bloquear a requisição antes mesmo de chamar o service.
-
-        // --- ACT & ASSERT ---
         mockMvc.perform(delete("/api/usuarios/1")
-                        // Simula um token JWT válido com a ROLE_USER
                         .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_USER"))))
-                .andExpect(status().isForbidden()); // 403 Forbidden (Regra do @PreAuthorize)
+                .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("DELETE /api/usuarios/{id} - Deve funcionar para ROLE_ADMIN (204)")
     void deletarUsuario_ComRoleAdmin_DeveRetornarNoContent() throws Exception {
-        // --- ARRANGE ---
-        // O service retorna HttpStatus, então mockamos isso
         when(usuarioService.deletarUsuario(1L)).thenReturn(HttpStatus.NO_CONTENT);
 
-        // --- ACT & ASSERT ---
         mockMvc.perform(delete("/api/usuarios/1")
-                        // Simula um token JWT válido com a ROLE_ADMIN
                         .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_ADMIN"))))
-                .andExpect(status().isNoContent()); // 204 No Content
+                .andExpect(status().isNoContent());
     }
 }

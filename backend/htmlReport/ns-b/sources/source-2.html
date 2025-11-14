@@ -1,0 +1,111 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EstabelecimentoRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.eti.qualaboa.estabelecimento.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: EstabelecimentoRepository (com.eti.qualaboa.estabelecimento.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">EstabelecimentoRepository$MockitoMock$mG4zMwdz</td>
+  </tr>
+  <tr>
+    <td class="name">EstabelecimentoRepository$MockitoMock$mG4zMwdz$auxiliary$0R81EgWu</td>
+  </tr>
+  <tr>
+    <td class="name">EstabelecimentoRepository$MockitoMock$mG4zMwdz$auxiliary$sfrNetWi</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.estabelecimento.repository;
+&nbsp;
+&nbsp;import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
+&nbsp;import com.eti.qualaboa.usuario.domain.entity.Usuario;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;public interface EstabelecimentoRepository extends JpaRepository&lt;Estabelecimento, Long&gt; {
+&nbsp;
+&nbsp;    boolean existsByEmail(String email);
+&nbsp;
+&nbsp;    // Exemplo de busca espacial com PostGIS
+&nbsp;    @Query(value = &quot;&quot;&quot;
+&nbsp;            SELECT * FROM estabelecimentos e
+&nbsp;            WHERE e.latitude IS NOT NULL
+&nbsp;            AND e.longitude IS NOT NULL
+&nbsp;            AND ST_DWithin(
+&nbsp;                ST_SetSRID(ST_MakePoint(e.longitude, e.latitude), 4326)::geography,
+&nbsp;                ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography,
+&nbsp;                :radius
+&nbsp;            )
+&nbsp;            &quot;&quot;&quot;, nativeQuery = true)
+&nbsp;    List&lt;Estabelecimento&gt; findAllWithinRadiusPostGis(
+&nbsp;            @Param(&quot;lat&quot;) double lat,
+&nbsp;            @Param(&quot;lng&quot;) double lng,
+&nbsp;            @Param(&quot;radius&quot;) double radiusMeters);
+&nbsp;
+&nbsp;    Optional&lt;Estabelecimento&gt; findByEmail(String email);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-11 22:30</div>
+</div>
+</body>
+</html>

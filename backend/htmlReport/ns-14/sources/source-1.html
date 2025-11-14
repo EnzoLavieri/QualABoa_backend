@@ -1,0 +1,196 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UsuarioController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.eti.qualaboa.usuario.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: UsuarioController (com.eti.qualaboa.usuario.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UsuarioController</td>
+<td class="coverageStat">
+  <span class="percent">
+    42,9%
+  </span>
+  <span class="absValue">
+    (3/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    35%
+  </span>
+  <span class="absValue">
+    (7/20)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UsuarioController$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    42,9%
+  </span>
+  <span class="absValue">
+    (3/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    35%
+  </span>
+  <span class="absValue">
+    (7/20)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.usuario.controller;
+&nbsp;
+&nbsp;import com.eti.qualaboa.estabelecimento.dto.EstabelecimentoResponseDTO;
+&nbsp;import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
+&nbsp;import com.eti.qualaboa.usuario.domain.entity.Usuario;
+&nbsp;import com.eti.qualaboa.usuario.dto.*;
+&nbsp;import com.eti.qualaboa.usuario.service.UsuarioService;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.Value;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.access.prepost.PreAuthorize;
+&nbsp;import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;api/usuarios&quot;)
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class UsuarioController {
+&nbsp;
+&nbsp;    private final UsuarioService usuarioService;
+&nbsp;
+&nbsp;    @PostMapping()
+&nbsp;    public ResponseEntity&lt;UsuarioResponseDTO&gt; criarUsuario(@RequestBody @Valid UsuarioRequestDTO requestDTO){
+<b class="fc">&nbsp;        UsuarioResponseDTO userResponseDTO = usuarioService.criarUsuario(requestDTO);</b>
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;UsuarioResponseDTO&gt; buscarPorId(@PathVariable Long id){
+<b class="fc">&nbsp;        Usuario user = usuarioService.findUserById(id);</b>
+&nbsp;
+<b class="fc">&nbsp;        UsuarioResponseDTO userResponseDTO = new UsuarioResponseDTO(user.getId(), user.getNome(), user.getEmail(),user.getSexo(),user.getPreferenciasUsuario());</b>
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.ok(userResponseDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/favoritar/{estabelecimentoId}&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; adicionarFavorito(@PathVariable Long estabelecimentoId, @RequestBody FavoritoRequestDTO requestDTO) {
+<b class="nc">&nbsp;        Usuario user = usuarioService.findUserById(requestDTO.getUserId());</b>
+<b class="nc">&nbsp;        usuarioService.favoritarEstabelecimento(user.getId(), estabelecimentoId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/favoritos/{userId}&quot;)
+&nbsp;    public ResponseEntity&lt;Set&lt;EstabelecimentoResponseDTO&gt;&gt; getMeusFavoritos(@PathVariable Long userId) {
+&nbsp;
+<b class="nc">&nbsp;        Set&lt;Estabelecimento&gt; favoritos = usuarioService.buscarFavoritos(userId);</b>
+&nbsp;
+<b class="nc">&nbsp;        Set&lt;EstabelecimentoResponseDTO&gt; dtos = favoritos.stream()</b>
+<b class="nc">&nbsp;                .map(EstabelecimentoResponseDTO::new)</b>
+<b class="nc">&nbsp;                .collect(Collectors.toSet());</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.ok(dtos);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/excluirFavorito/{estabelecimentoId}&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; excluirFavorito(@PathVariable Long estabelecimentoId, @RequestBody FavoritoRequestDTO requestDTO) {
+<b class="nc">&nbsp;        Usuario user = usuarioService.findUserById(requestDTO.getUserId());</b>
+<b class="nc">&nbsp;        usuarioService.excluirFavoritos(user.getId(), estabelecimentoId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;UsuarioUpdateResponseDTO&gt; atualizarUsuario(@PathVariable Long id, @RequestBody @Valid UsuarioUpdateRequestDTO requestDTO){
+<b class="nc">&nbsp;        UsuarioUpdateResponseDTO userResponseDTO = usuarioService.atualizarUsuario(id,requestDTO);</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.OK).body(userResponseDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAuthority(&#39;SCOPE_ADMIN&#39;)&quot;)
+&nbsp;    public ResponseEntity&lt;HttpStatus&gt; deletarUsuario(@PathVariable Long id){
+<b class="fc">&nbsp;        HttpStatus user = usuarioService.deletarUsuario(id);</b>
+<b class="fc">&nbsp;        return  ResponseEntity.noContent().build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-11 22:30</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TokenController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.eti.qualaboa.config.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: TokenController (com.eti.qualaboa.config.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TokenController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.config.controller;
+&nbsp;
+&nbsp;import com.eti.qualaboa.config.dto.LoginRequest;
+&nbsp;import com.eti.qualaboa.config.dto.LoginResponse;
+&nbsp;import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
+&nbsp;import com.eti.qualaboa.usuario.domain.entity.Role;
+&nbsp;import com.eti.qualaboa.usuario.repository.UsuarioRepository;
+&nbsp;import lombok.NoArgsConstructor;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.authentication.BadCredentialsException;
+&nbsp;import org.springframework.security.core.userdetails.UsernameNotFoundException;
+&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+&nbsp;import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+&nbsp;import org.springframework.security.oauth2.jwt.JwtEncoder;
+&nbsp;import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;
+&nbsp;import java.time.Instant;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/auth&quot;)
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class TokenController {
+&nbsp;
+&nbsp;    private final JwtEncoder jwtEncoder;
+&nbsp;    private final UsuarioRepository usuarioRepository;
+&nbsp;    private final EstabelecimentoRepository estabelecimentoRepository;
+&nbsp;    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/login&quot;)
+&nbsp;    public ResponseEntity&lt;LoginResponse&gt; login(@RequestBody LoginRequest loginRequest) {
+&nbsp;
+<b class="nc">&nbsp;        var user = usuarioRepository.findByEmail(loginRequest.email());</b>
+&nbsp;
+<b class="nc">&nbsp;        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {</b>
+<b class="nc">&nbsp;            throw new BadCredentialsException(&quot;email ou senha inválidos&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        var expiresIn = 300L;</b>
+<b class="nc">&nbsp;        var scope = user.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(&quot; &quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        var claims = JwtClaimsSet.builder()</b>
+<b class="nc">&nbsp;                .issuer(&quot;qualaboa-backend&quot;)</b>
+<b class="nc">&nbsp;                .subject(user.get().getId().toString())</b>
+<b class="nc">&nbsp;                .expiresAt(Instant.now().plusSeconds(expiresIn)) // 5 minutos</b>
+<b class="nc">&nbsp;                .issuedAt(Instant.now())</b>
+<b class="nc">&nbsp;                .claim(&quot;scope&quot;, scope)</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;
+<b class="nc">&nbsp;        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();</b>
+<b class="nc">&nbsp;        return  ResponseEntity.ok(new LoginResponse(user.get().getId(), jwtValue,expiresIn));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/login/estabelecimento&quot;)
+&nbsp;    public ResponseEntity&lt;LoginResponse&gt; loginEstabelecimento(@RequestBody LoginRequest loginRequest) {
+&nbsp;
+<b class="nc">&nbsp;        var estabelecimento = estabelecimentoRepository.findByEmail(loginRequest.email());</b>
+&nbsp;
+<b class="nc">&nbsp;        if (estabelecimento.isEmpty() || !estabelecimento.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {</b>
+<b class="nc">&nbsp;            throw new BadCredentialsException(&quot;email ou senha inválidos&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        var expiresIn = 300L;</b>
+<b class="nc">&nbsp;        var scope = estabelecimento.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(&quot; &quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        var claims = JwtClaimsSet.builder()</b>
+<b class="nc">&nbsp;                .issuer(&quot;qualaboa-backend&quot;)</b>
+<b class="nc">&nbsp;                .subject(estabelecimento.get().getId().toString())</b>
+<b class="nc">&nbsp;                .expiresAt(Instant.now().plusSeconds(expiresIn)) // 5 minutos</b>
+<b class="nc">&nbsp;                .issuedAt(Instant.now())</b>
+<b class="nc">&nbsp;                .claim(&quot;scope&quot;, scope)</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;
+<b class="nc">&nbsp;        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();</b>
+<b class="nc">&nbsp;        return  ResponseEntity.ok(new LoginResponse(estabelecimento.get().getIdEstabelecimento(), jwtValue,expiresIn));</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-11 22:30</div>
+</div>
+</body>
+</html>

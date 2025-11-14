@@ -13,7 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PlacesClient {
 
-    private final WebClient webClient = WebClient.builder().build();
+    private  WebClient webClient = WebClient.builder().build();
 
     @Value("${google.places.apiKey}")
     private String apiKey;

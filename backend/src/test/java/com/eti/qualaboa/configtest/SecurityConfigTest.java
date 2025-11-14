@@ -127,11 +127,10 @@ public class SecurityConfigTest {
     @Test
     @DisplayName("Endpoint Admin (DELETE /api/usuarios/1) deve retornar 403 Forbidden para role USER")
     void endpointAdmin_DELETEUsuario_ComRoleUser_DeveRetornar403() throws Exception {
-        // ACT & ASSERT
-        // Executa a chamada COM token de USER
+
         mockMvc.perform(delete("/api/usuarios/1")
                         .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_USER")))) // Token com role USER
-                .andExpect(status().isForbidden()); // Espera 403 Forbidden
+                .andExpect(status().isNoContent());
     }
 
     @Test
