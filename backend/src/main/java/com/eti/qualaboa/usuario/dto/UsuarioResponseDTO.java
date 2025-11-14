@@ -18,7 +18,7 @@ public class UsuarioResponseDTO {
     private String fotoUrl;
 
     public UsuarioResponseDTO(Long id, String nome, String email, Sexo sexo,
-                              List<String> preferenciasUsuario, String fotoUrl) {
+                              List<String> preferenciasUsuario) {
         this.id = id;
         this.nome = nome;
         this.email = email;

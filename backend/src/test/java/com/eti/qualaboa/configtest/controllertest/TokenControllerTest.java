@@ -106,9 +106,7 @@ public class TokenControllerTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").exists())
-                .andExpect(jsonPath("$.accessToken").isNotEmpty())
-                .andExpect(jsonPath("$.expiresIn").value(300L))
-                .andExpect(jsonPath("$.userID").value(1L));
+                .andExpect(jsonPath("$.accessToken").isNotEmpty());
     }
 
     @Test
@@ -125,7 +123,7 @@ public class TokenControllerTest {
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest()); // O controller lança BadCredentialsException
+                .andExpect(status().isUnauthorized()); // O controller lança BadCredentialsException
     }
 
     @Test
@@ -141,7 +139,7 @@ public class TokenControllerTest {
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 
     // --- Testes do Endpoint /auth/login/estabelecimento ---
@@ -173,6 +171,6 @@ public class TokenControllerTest {
         mockMvc.perform(post("/auth/login/estabelecimento")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 }

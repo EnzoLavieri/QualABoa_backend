@@ -25,9 +25,20 @@ public class CupomController {
         return ResponseEntity.ok(cupomService.buscarPorId(id));
     }
 
+    @GetMapping("/estabelecimento/{idEstabelecimento}")
+    public ResponseEntity<List<CupomDTO>> getCuponsDoEstabelecimento(@PathVariable Long idEstabelecimento) {
+        return ResponseEntity.ok(cupomService.buscarCuponsPorEstabelecimento(idEstabelecimento));
+    }
+
     @PostMapping
     public ResponseEntity<CupomDTO> criar(@RequestBody CupomDTO dto) {
         return ResponseEntity.ok(cupomService.criarCupom(dto));
+    }
+
+    @PostMapping("/validar")
+    public ResponseEntity<Void> validarCupom(@RequestParam String codigo) {
+        cupomService.validarCupom(codigo);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")

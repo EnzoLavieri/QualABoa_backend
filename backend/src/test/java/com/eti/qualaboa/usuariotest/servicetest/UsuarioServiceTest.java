@@ -2,6 +2,8 @@ package com.eti.qualaboa.usuariotest.servicetest;
 
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.service.EstabelecimentoService;
+// [CORREÇÃO] Importa a nova dependência que estava faltando
+import com.eti.qualaboa.metricas.service.MetricasService;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.domain.entity.Usuario;
 import com.eti.qualaboa.usuario.dto.UsuarioRequestDTO;
@@ -46,6 +48,10 @@ public class UsuarioServiceTest {
 
     @Mock
     private EstabelecimentoService estabelecimentoService;
+
+    // [CORREÇÃO] Adiciona o mock para o MetricasService
+    @Mock
+    private MetricasService metricasService;
 
     // Injeta os mocks acima no UsuarioService
     @InjectMocks
@@ -195,6 +201,12 @@ public class UsuarioServiceTest {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
         when(estabelecimentoService.buscarPorId(10L)).thenReturn(estabelecimento);
 
+        // [CORREÇÃO] Simula o comportamento do novo mock (metricasService)
+        // Não precisa fazer nada (void), apenas existir.
+        // Se o método 'registrarFavorito' não for void, você precisará de um when/thenReturn.
+        // Assumindo que é void:
+        doNothing().when(metricasService).registrarFavorito(anyLong());
+
         // --- ACT (Ação) ---
         HttpStatus status = usuarioService.favoritarEstabelecimento(1L, 10L);
 
@@ -204,5 +216,7 @@ public class UsuarioServiceTest {
         assertTrue(usuario.getFavoritos().contains(estabelecimento));
         // Verifica se o repository.save foi chamado
         verify(usuarioRepository, times(1)).save(usuario);
+        // [CORREÇÃO] Verifica se o metricasService foi chamado
+        verify(metricasService, times(1)).registrarFavorito(10L);
     }
 }

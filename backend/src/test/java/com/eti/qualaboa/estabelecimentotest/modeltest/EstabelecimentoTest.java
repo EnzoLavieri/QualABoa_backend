@@ -120,7 +120,7 @@ public class EstabelecimentoTest {
                 .longitude(-51.93)
                 .enderecoFormatado("Rua Teste, 123, Maringá")
                 .endereco(endereco) // Relacionamento @OneToOne
-                .imagemPerfil(imagemBytes) // @Lob
+                .fotoUrl( "imagem_fake")
                 .conveniencias(conveniencias) // @ElementCollection
                 .roles(Set.of(roleEstabelecimento)) // Relacionamento @ManyToMany
                 .build();
@@ -138,7 +138,7 @@ public class EstabelecimentoTest {
         assertThat(estDoBanco).isNotNull();
         assertThat(estDoBanco.getNome()).isEqualTo("Bar do Teste");
         assertThat(estDoBanco.getClassificacao()).isEqualTo(4.5);
-        assertThat(new String(estDoBanco.getImagemPerfil())).isEqualTo("imagem_fake");
+        assertThat(new String(estDoBanco.getFotoUrl())).isEqualTo("imagem_fake");
 
         // Verifica o Endereço (Cascade Persist)
         assertThat(estDoBanco.getEndereco()).isNotNull();
