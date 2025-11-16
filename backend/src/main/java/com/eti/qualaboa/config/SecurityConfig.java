@@ -2,7 +2,10 @@ package com.eti.qualaboa.config;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,6 +34,8 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Value("${jwt.public.key}")
     private RSAPublicKey publicKey;
@@ -90,6 +95,16 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CommandLineRunner checkEnvironmentVariables() {
+        return args -> {
+            logger.info("===================================================================");
+            logger.info("VERIFICANDO VARIÁVEIS DE AMBIENTE (CORS)");
+            logger.info("A propriedade 'frontend.url' foi carregada com o valor: [ " + frontendUrl + " ]");
+            logger.info("===================================================================");
+        };
     }
 
 }
