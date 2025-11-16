@@ -48,34 +48,34 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">TokenController</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/2)
+    (2/2)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    87,5%
   </span>
   <span class="absValue">
-    (0/8)
+    (7/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/28)
+    (32/32)
   </span>
 </td>
 </tr>
@@ -124,49 +124,57 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    @PostMapping(&quot;/login&quot;)
 &nbsp;    public ResponseEntity&lt;LoginResponse&gt; login(@RequestBody LoginRequest loginRequest) {
 &nbsp;
-<b class="nc">&nbsp;        var user = usuarioRepository.findByEmail(loginRequest.email());</b>
+<b class="fc">&nbsp;        var user = usuarioRepository.findByEmail(loginRequest.email());</b>
 &nbsp;
-<b class="nc">&nbsp;        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {</b>
-<b class="nc">&nbsp;            throw new BadCredentialsException(&quot;email ou senha inválidos&quot;);</b>
+<b class="fc">&nbsp;        if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {</b>
+<b class="fc">&nbsp;            throw new BadCredentialsException(&quot;email ou senha inválidos&quot;);</b>
 &nbsp;        }
 &nbsp;
-<b class="nc">&nbsp;        var expiresIn = 300L;</b>
-<b class="nc">&nbsp;        var scope = user.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(&quot; &quot;));</b>
+<b class="fc">&nbsp;        var expiresIn = 84000L;</b>
+<b class="fc">&nbsp;        var scope = user.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(&quot; &quot;));</b>
 &nbsp;
-<b class="nc">&nbsp;        var claims = JwtClaimsSet.builder()</b>
-<b class="nc">&nbsp;                .issuer(&quot;qualaboa-backend&quot;)</b>
-<b class="nc">&nbsp;                .subject(user.get().getId().toString())</b>
-<b class="nc">&nbsp;                .expiresAt(Instant.now().plusSeconds(expiresIn)) // 5 minutos</b>
-<b class="nc">&nbsp;                .issuedAt(Instant.now())</b>
-<b class="nc">&nbsp;                .claim(&quot;scope&quot;, scope)</b>
-<b class="nc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        var claims = JwtClaimsSet.builder()</b>
+<b class="fc">&nbsp;                .issuer(&quot;qualaboa-backend&quot;)</b>
+<b class="fc">&nbsp;                .subject(user.get().getId().toString())</b>
+<b class="fc">&nbsp;                .expiresAt(Instant.now().plusSeconds(expiresIn)) // 5 minutos</b>
+<b class="fc">&nbsp;                .issuedAt(Instant.now())</b>
+<b class="fc">&nbsp;                .claim(&quot;scope&quot;, scope)</b>
+<b class="fc">&nbsp;                .build();</b>
 &nbsp;
-<b class="nc">&nbsp;        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();</b>
-<b class="nc">&nbsp;        return  ResponseEntity.ok(new LoginResponse(user.get().getId(), jwtValue,expiresIn));</b>
+<b class="fc">&nbsp;        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();</b>
+<b class="fc">&nbsp;        return  ResponseEntity.ok(new LoginResponse(user.get().getId(),</b>
+&nbsp;                jwtValue,
+<b class="fc">&nbsp;                expiresIn,</b>
+<b class="fc">&nbsp;                user.get().getFotoUrl()</b>
+&nbsp;        ));
 &nbsp;    }
 &nbsp;
 &nbsp;    @PostMapping(&quot;/login/estabelecimento&quot;)
 &nbsp;    public ResponseEntity&lt;LoginResponse&gt; loginEstabelecimento(@RequestBody LoginRequest loginRequest) {
 &nbsp;
-<b class="nc">&nbsp;        var estabelecimento = estabelecimentoRepository.findByEmail(loginRequest.email());</b>
+<b class="fc">&nbsp;        var estabelecimento = estabelecimentoRepository.findByEmail(loginRequest.email());</b>
 &nbsp;
-<b class="nc">&nbsp;        if (estabelecimento.isEmpty() || !estabelecimento.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {</b>
-<b class="nc">&nbsp;            throw new BadCredentialsException(&quot;email ou senha inválidos&quot;);</b>
+<b class="pc">&nbsp;        if (estabelecimento.isEmpty() || !estabelecimento.get().isLoginCorrect(loginRequest, bCryptPasswordEncoder)) {</b>
+<b class="fc">&nbsp;            throw new BadCredentialsException(&quot;email ou senha inválidos&quot;);</b>
 &nbsp;        }
 &nbsp;
-<b class="nc">&nbsp;        var expiresIn = 300L;</b>
-<b class="nc">&nbsp;        var scope = estabelecimento.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(&quot; &quot;));</b>
+<b class="fc">&nbsp;        var expiresIn = 86400L;</b>
+<b class="fc">&nbsp;        var scope = estabelecimento.get().getRoles().stream().map(Role::getNome).collect(Collectors.joining(&quot; &quot;));</b>
 &nbsp;
-<b class="nc">&nbsp;        var claims = JwtClaimsSet.builder()</b>
-<b class="nc">&nbsp;                .issuer(&quot;qualaboa-backend&quot;)</b>
-<b class="nc">&nbsp;                .subject(estabelecimento.get().getId().toString())</b>
-<b class="nc">&nbsp;                .expiresAt(Instant.now().plusSeconds(expiresIn)) // 5 minutos</b>
-<b class="nc">&nbsp;                .issuedAt(Instant.now())</b>
-<b class="nc">&nbsp;                .claim(&quot;scope&quot;, scope)</b>
-<b class="nc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        var claims = JwtClaimsSet.builder()</b>
+<b class="fc">&nbsp;                .issuer(&quot;qualaboa-backend&quot;)</b>
+<b class="fc">&nbsp;                .subject(estabelecimento.get().getId().toString())</b>
+<b class="fc">&nbsp;                .expiresAt(Instant.now().plusSeconds(expiresIn)) // 5 minutos</b>
+<b class="fc">&nbsp;                .issuedAt(Instant.now())</b>
+<b class="fc">&nbsp;                .claim(&quot;scope&quot;, scope)</b>
+<b class="fc">&nbsp;                .build();</b>
 &nbsp;
-<b class="nc">&nbsp;        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();</b>
-<b class="nc">&nbsp;        return  ResponseEntity.ok(new LoginResponse(estabelecimento.get().getIdEstabelecimento(), jwtValue,expiresIn));</b>
+<b class="fc">&nbsp;        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();</b>
+<b class="fc">&nbsp;        return  ResponseEntity.ok(new LoginResponse(estabelecimento.get().getIdEstabelecimento(),</b>
+&nbsp;                jwtValue,
+<b class="fc">&nbsp;                expiresIn,</b>
+<b class="fc">&nbsp;                estabelecimento.get().getFotoUrl()</b>
+&nbsp;        ));
 &nbsp;    }
 &nbsp;}
 </code>
@@ -192,7 +200,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

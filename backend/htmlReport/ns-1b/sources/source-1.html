@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > EventoDTO</title>
+  <title>Coverage Report > Endereco</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,19 +19,25 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.evento.dto</a>
+    <a href="../index.html">com.eti.qualaboa.endereco</a>
 </div>
 
-<h1>Coverage Summary for Class: EventoDTO (com.eti.qualaboa.evento.dto)</h1>
+<h1>Coverage Summary for Class: Endereco (com.eti.qualaboa.endereco)</h1>
 
 <table class="coverageStats">
+
 <tr>
   <th class="name">Class</th>
 </tr>
+  <tr>
+    <td class="name">Endereco$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">Endereco$HibernateProxy</td>
+  </tr>
 <tr>
-  <td class="name">EventoDTO</td>
+  <td class="name"><strong>Total</strong></td>
 </tr>
-
 </table>
 
 <br/>
@@ -39,26 +45,35 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.evento.dto;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.endereco;
 &nbsp;
+&nbsp;import jakarta.persistence.*;
 &nbsp;import lombok.*;
 &nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;enderecos&quot;)
 &nbsp;@Data
 &nbsp;@NoArgsConstructor
 &nbsp;@AllArgsConstructor
 &nbsp;@Builder
-&nbsp;public class EventoDTO {
-&nbsp;    private Long idEvento;
-&nbsp;    private Long idEstabelecimento;
-&nbsp;    private Long idCupom;
-&nbsp;    private String descricao;
-&nbsp;    private String titulo;
-&nbsp;    private String data;
-&nbsp;    private String horario;
-&nbsp;    private int totalVisualizacoes;
-&nbsp;    private int totalCliques;
-&nbsp;}
+&nbsp;@EqualsAndHashCode(of = &quot;idEndereco&quot;)
+&nbsp;@ToString(exclude = {&quot;estabelecimento&quot;})
+&nbsp;public class Endereco {
 &nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long idEndereco;
+&nbsp;
+&nbsp;    private String rua;
+&nbsp;    private String numero;
+&nbsp;    private String bairro;
+&nbsp;    private String cidade;
+&nbsp;    private String estado;
+&nbsp;    private String cep;
+&nbsp;
+&nbsp;    private Double latitude;
+&nbsp;    private Double longitude;
+&nbsp;}
 </code>
 </pre>
 </div>
@@ -82,7 +97,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

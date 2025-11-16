@@ -29,29 +29,27 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-// Import estático necessário para simular o JWT
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CupomController.class) // Testa apenas o CupomController
-@Import(SecurityConfig.class) // Importa a config de segurança para desabilitar CSRF, etc.
+@WebMvcTest(CupomController.class)
+@Import(SecurityConfig.class)
 public class CupomControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper; // Para converter Objetos <-> JSON
+    private ObjectMapper objectMapper;
 
-    @MockBean // Simula o CupomService (não usa o serviço real)
+    @MockBean
     private CupomService cupomService;
 
     private CupomDTO mockCupomDTO;
 
     @BeforeEach
     void setUp() {
-        // Prepara um DTO de cupom para usar nos testes
         mockCupomDTO = CupomDTO.builder()
                 .idCupom(1L)
                 .idEstabelecimento(1L)
@@ -67,18 +65,15 @@ public class CupomControllerTest {
                 .build();
     }
 
-    // --- Testes de Segurança (Não Autenticado) ---
 
     @ParameterizedTest
     @MethodSource("endpointsProvider")
     @DisplayName("Deve retornar 401 Unauthorized para todas as rotas sem autenticação")
     void deveRetornar401ParaEndpointsProtegidos(MockHttpServletRequestBuilder requestBuilder) throws Exception {
-        // ACT & ASSERT
         mockMvc.perform(requestBuilder)
-                .andExpect(status().isUnauthorized()); // Espera 401
+                .andExpect(status().isUnauthorized());
     }
 
-    // Provedor de endpoints para o teste parametrizado acima
     private static Stream<Arguments> endpointsProvider() {
         return Stream.of(
                 Arguments.of(get("/cupons")),
@@ -89,17 +84,14 @@ public class CupomControllerTest {
         );
     }
 
-    // --- Testes de Funcionalidade (Autenticado) ---
 
     @Test
     @DisplayName("GET /cupons - Deve listar cupons com autenticação")
     void listar_ComAutenticacao_DeveRetornarLista() throws Exception {
-        // ARRANGE
         when(cupomService.listarTodos()).thenReturn(List.of(mockCupomDTO));
 
-        // ACT & ASSERT
         mockMvc.perform(get("/cupons")
-                        .with(jwt())) // Simula um JWT válido
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(1))
@@ -109,12 +101,12 @@ public class CupomControllerTest {
     @Test
     @DisplayName("GET /cupons/{id} - Deve buscar cupom por ID com autenticação")
     void buscarPorId_ComAutenticacao_DeveRetornarCupom() throws Exception {
-        // ARRANGE
+
         when(cupomService.buscarPorId(1L)).thenReturn(mockCupomDTO);
 
-        // ACT & ASSERT
+
         mockMvc.perform(get("/cupons/1")
-                        .with(jwt())) // Simula um JWT válido
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idCupom", is(1)))
                 .andExpect(jsonPath("$.descricao", is("10% Off no Natal")));
@@ -123,12 +115,10 @@ public class CupomControllerTest {
     @Test
     @DisplayName("POST /cupons - Deve criar cupom com autenticação")
     void criar_ComAutenticacao_DeveRetornarCupomCriado() throws Exception {
-        // ARRANGE
         when(cupomService.criarCupom(any(CupomDTO.class))).thenReturn(mockCupomDTO);
 
-        // ACT & ASSERT
         mockMvc.perform(post("/cupons")
-                        .with(jwt()) // Simula um JWT válido
+                        .with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockCupomDTO)))
                 .andExpect(status().isOk())
@@ -138,12 +128,10 @@ public class CupomControllerTest {
     @Test
     @DisplayName("PUT /cupons/{id} - Deve atualizar cupom com autenticação")
     void atualizar_ComAutenticacao_DeveRetornarCupomAtualizado() throws Exception {
-        // ARRANGE
         when(cupomService.atualizarCupom(eq(1L), any(CupomDTO.class))).thenReturn(mockCupomDTO);
 
-        // ACT & ASSERT
         mockMvc.perform(put("/cupons/1")
-                        .with(jwt()) // Simula um JWT válido
+                        .with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockCupomDTO)))
                 .andExpect(status().isOk())
@@ -153,12 +141,10 @@ public class CupomControllerTest {
     @Test
     @DisplayName("DELETE /cupons/{id} - Deve deletar cupom com autenticação")
     void deletar_ComAutenticacao_DeveRetornarNoContent() throws Exception {
-        // ARRANGE
         doNothing().when(cupomService).deletarCupom(1L);
 
-        // ACT & ASSERT
         mockMvc.perform(delete("/cupons/1")
-                        .with(jwt())) // Simula um JWT válido
-                .andExpect(status().isNoContent()); // Espera 204 No Content
+                        .with(jwt()))
+                .andExpect(status().isNoContent());
     }
 }

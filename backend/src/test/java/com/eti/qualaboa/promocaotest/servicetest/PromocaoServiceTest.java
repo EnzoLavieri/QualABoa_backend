@@ -23,10 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Habilita o Mockito para este teste
+@ExtendWith(MockitoExtension.class)
 public class PromocaoServiceTest {
 
-    // Cria um mock (dublê) para cada dependência do serviço
     @Mock
     private PromocaoRepository promocaoRepository;
 
@@ -36,11 +35,9 @@ public class PromocaoServiceTest {
     @Mock
     private CupomRepository cupomRepository;
 
-    // Injeta os mocks acima na instância real do serviço
     @InjectMocks
     private PromocaoService promocaoService;
 
-    // --- Dados de Teste ---
     private Estabelecimento mockEstabelecimento;
     private Cupom mockCupom;
     private Promocao mockPromocao;
@@ -48,7 +45,6 @@ public class PromocaoServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Prepara dados que serão reutilizados em vários testes
 
         mockEstabelecimento = new Estabelecimento();
         mockEstabelecimento.setIdEstabelecimento(1L);
@@ -58,7 +54,6 @@ public class PromocaoServiceTest {
         mockCupom.setIdCupom(10L);
         mockCupom.setCodigo("TESTE123");
 
-        // DTO (Data Transfer Object) - usado para entrada e saída
         mockPromocaoDTO = PromocaoDTO.builder()
                 .idEstabelecimento(1L)
                 .idCupom(10L)
@@ -67,7 +62,6 @@ public class PromocaoServiceTest {
                 .ativa(true)
                 .build();
 
-        // Entidade (o que é salvo no banco)
         mockPromocao = Promocao.builder()
                 .idPromocao(100L)
                 .estabelecimento(mockEstabelecimento)
@@ -83,35 +77,27 @@ public class PromocaoServiceTest {
     @Test
     @DisplayName("Deve criar uma promoção com sucesso")
     void deveCriarPromocaoComSucesso() {
-        // --- ARRANGE (Preparação) ---
 
-        // 1. Quando o serviço procurar o estabelecimento 1L, encontre o mockEstabelecimento
         when(estabelecimentoRepository.findById(1L)).thenReturn(Optional.of(mockEstabelecimento));
 
-        // 2. Quando o serviço procurar o cupom 10L, encontre o mockCupom
         when(cupomRepository.findById(10L)).thenReturn(Optional.of(mockCupom));
 
-        // 3. Quando o serviço tentar salvar a promoção:
         when(promocaoRepository.save(any(Promocao.class))).thenAnswer(invocation -> {
-            // Retorna a própria promoção que foi passada para o 'save',
-            // simulando que ela foi salva e teve um ID atribuído.
+
             Promocao promocaoSalva = invocation.getArgument(0);
-            promocaoSalva.setIdPromocao(100L); // Simula o ID gerado pelo banco
+            promocaoSalva.setIdPromocao(100L);
             return promocaoSalva;
         });
 
-        // --- ACT (Ação) ---
         PromocaoDTO resultadoDTO = promocaoService.criarPromocao(mockPromocaoDTO);
 
-        // --- ASSERT (Verificação) ---
         assertNotNull(resultadoDTO);
         assertEquals(100L, resultadoDTO.getIdPromocao());
         assertEquals("Promoção Teste", resultadoDTO.getDescricao());
         assertEquals(1L, resultadoDTO.getIdEstabelecimento());
         assertEquals(10L, resultadoDTO.getIdCupom());
-        assertEquals(0, resultadoDTO.getTotalCliques()); // Verifica valor default
+        assertEquals(0, resultadoDTO.getTotalCliques());
 
-        // Verifica se os métodos dos repositórios foram chamados
         verify(estabelecimentoRepository, times(1)).findById(1L);
         verify(cupomRepository, times(1)).findById(10L);
         verify(promocaoRepository, times(1)).save(any(Promocao.class));
@@ -120,8 +106,7 @@ public class PromocaoServiceTest {
     @Test
     @DisplayName("Deve criar promoção mesmo sem cupom")
     void deveCriarPromocaoSemCupom() {
-        // --- ARRANGE ---
-        mockPromocaoDTO.setIdCupom(null); // DTO não tem cupom
+        mockPromocaoDTO.setIdCupom(null);
 
         when(estabelecimentoRepository.findById(1L)).thenReturn(Optional.of(mockEstabelecimento));
         when(promocaoRepository.save(any(Promocao.class))).thenAnswer(invocation -> {
@@ -130,46 +115,36 @@ public class PromocaoServiceTest {
             return p;
         });
 
-        // --- ACT ---
         PromocaoDTO resultadoDTO = promocaoService.criarPromocao(mockPromocaoDTO);
 
-        // --- ASSERT ---
         assertNotNull(resultadoDTO);
-        assertNull(resultadoDTO.getIdCupom()); // Garante que o ID do cupom é nulo
+        assertNull(resultadoDTO.getIdCupom());
         assertEquals(101L, resultadoDTO.getIdPromocao());
-        // Verifica que o findById do cupom NUNCA foi chamado
         verify(cupomRepository, never()).findById(anyLong());
     }
 
     @Test
     @DisplayName("Deve falhar ao criar promoção se estabelecimento não existe")
     void deveFalharCriarSeEstabelecimentoNaoExiste() {
-        // --- ARRANGE ---
-        // Simula que o estabelecimento 1L não foi encontrado
+
         when(estabelecimentoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // --- ACT & ASSERT ---
-        // Verifica se a exceção RuntimeException foi lançada
+
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             promocaoService.criarPromocao(mockPromocaoDTO);
         });
 
-        // Verifica a mensagem da exceção
         assertEquals("Estabelecimento não encontrado", exception.getMessage());
 
-        // Garante que o save nunca foi chamado
         verify(promocaoRepository, never()).save(any());
     }
 
     @Test
     @DisplayName("Deve falhar ao criar promoção se cupom não existe")
     void deveFalharCriarSeCupomNaoExiste() {
-        // --- ARRANGE ---
         when(estabelecimentoRepository.findById(1L)).thenReturn(Optional.of(mockEstabelecimento));
-        // Simula que o cupom 10L não foi encontrado
         when(cupomRepository.findById(10L)).thenReturn(Optional.empty());
 
-        // --- ACT & ASSERT ---
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             promocaoService.criarPromocao(mockPromocaoDTO);
         });
@@ -181,14 +156,11 @@ public class PromocaoServiceTest {
     @Test
     @DisplayName("Deve buscar promoção por ID com sucesso")
     void deveBuscarPorId() {
-        // --- ARRANGE ---
-        // Simula a busca no banco
+
         when(promocaoRepository.findById(100L)).thenReturn(Optional.of(mockPromocao));
 
-        // --- ACT ---
         PromocaoDTO resultadoDTO = promocaoService.buscarPorId(100L);
 
-        // --- ASSERT ---
         assertNotNull(resultadoDTO);
         assertEquals(100L, resultadoDTO.getIdPromocao());
         assertEquals(1L, resultadoDTO.getIdEstabelecimento());
@@ -198,10 +170,8 @@ public class PromocaoServiceTest {
     @Test
     @DisplayName("Deve falhar ao buscar ID inexistente")
     void deveFalharBuscarIdInexistente() {
-        // --- ARRANGE ---
         when(promocaoRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // --- ACT & ASSERT ---
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             promocaoService.buscarPorId(999L);
         });
@@ -211,13 +181,10 @@ public class PromocaoServiceTest {
     @Test
     @DisplayName("Deve listar todas as promoções")
     void deveListarTodas() {
-        // --- ARRANGE ---
         when(promocaoRepository.findAll()).thenReturn(List.of(mockPromocao));
 
-        // --- ACT ---
         List<PromocaoDTO> resultados = promocaoService.listarTodas();
 
-        // --- ASSERT ---
         assertNotNull(resultados);
         assertEquals(1, resultados.size());
         assertEquals(100L, resultados.get(0).getIdPromocao());
@@ -226,15 +193,12 @@ public class PromocaoServiceTest {
     @Test
     @DisplayName("Deve deletar uma promoção")
     void deveDeletarPromocao() {
-        // --- ARRANGE ---
-        // Configura o mock para não fazer nada quando deleteById for chamado
+
         doNothing().when(promocaoRepository).deleteById(100L);
 
-        // --- ACT ---
         promocaoService.deletarPromocao(100L);
 
-        // --- ASSERT ---
-        // Verifica se o método deleteById foi chamado exatamente 1 vez com o ID 100
+
         verify(promocaoRepository, times(1)).deleteById(100L);
     }
 }

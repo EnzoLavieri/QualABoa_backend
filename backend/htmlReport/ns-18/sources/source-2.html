@@ -1,0 +1,178 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Usuario</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.eti.qualaboa.usuario.domain.entity</a>
+</div>
+
+<h1>Coverage Summary for Class: Usuario (com.eti.qualaboa.usuario.domain.entity)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Usuario</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Usuario$HibernateInstantiator</td>
+  </tr>
+  <tr>
+    <td class="name">Usuario$HibernateProxy</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.usuario.domain.entity;
+&nbsp;
+&nbsp;import com.eti.qualaboa.config.dto.LoginRequest;
+&nbsp;import com.eti.qualaboa.enums.Sexo;
+&nbsp;import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.Setter;
+&nbsp;import lombok.ToString;
+&nbsp;import org.springframework.security.crypto.password.PasswordEncoder;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;usuarios&quot;)
+&nbsp;@Getter
+&nbsp;@Setter
+&nbsp;@ToString
+<b class="fc">&nbsp;public class Usuario {</b>
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    @Column(name = &quot;usuario_id&quot;)
+&nbsp;    private Long id;
+&nbsp;
+&nbsp;    private String nome;
+&nbsp;    private String email;
+&nbsp;    private String senha;
+&nbsp;    private Sexo sexo;
+&nbsp;
+&nbsp;    @Column(name = &quot;foto_url&quot;, length = 1000)
+&nbsp;    private String fotoUrl;
+&nbsp;
+&nbsp;    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+&nbsp;    @JoinTable(
+&nbsp;            name = &quot;tb_users_roles&quot;,
+&nbsp;            joinColumns = @JoinColumn(name = &quot;usuario_id&quot;),
+&nbsp;            inverseJoinColumns = @JoinColumn(name = &quot;role_id&quot;)
+&nbsp;    )
+&nbsp;    private Set&lt;Role&gt; roles;
+&nbsp;
+&nbsp;    @ElementCollection(fetch = FetchType.EAGER)
+&nbsp;    @CollectionTable(name=&quot;usuario_preferencias&quot;, joinColumns=@JoinColumn(name=&quot;usuario_id&quot;))
+&nbsp;    private List&lt;String&gt; preferenciasUsuario;
+&nbsp;
+&nbsp;    @ManyToMany(fetch = FetchType.LAZY)
+&nbsp;    @JoinTable(
+&nbsp;            name = &quot;usuario_favoritos_estabelecimento&quot;,
+&nbsp;            joinColumns = @JoinColumn(name = &quot;usuario_id&quot;),
+&nbsp;            inverseJoinColumns = @JoinColumn(name = &quot;estabelecimento_id&quot;)
+&nbsp;    )
+&nbsp;    private Set&lt;Estabelecimento&gt; favoritos;
+&nbsp;
+&nbsp;    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+<b class="fc">&nbsp;        return passwordEncoder.matches(loginRequest.password(), this.senha);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // falta checkins e avaliações
+&nbsp;    // falta imagens
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
+</div>
+</body>
+</html>

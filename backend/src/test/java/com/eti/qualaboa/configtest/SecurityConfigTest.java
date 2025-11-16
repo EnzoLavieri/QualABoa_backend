@@ -35,11 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Teste para a SecurityConfig.
- * Carrega todos os controllers (@WebMvcTest sem args) e a SecurityConfig real (@Import).
- * Mocka toda a camada de serviço/repositório para isolar o teste na segurança da web.
- */
+
 @WebMvcTest
 @Import(SecurityConfig.class)
 public class SecurityConfigTest {
@@ -50,8 +46,7 @@ public class SecurityConfigTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // --- Mocks de todas as dependências de serviço/repositório ---
-    // (Necessários porque @WebMvcTest não carrega a camada de serviço)
+
     @MockBean
     private UsuarioService usuarioService;
     @MockBean
@@ -70,25 +65,22 @@ public class SecurityConfigTest {
     private EstabelecimentoRepository estabelecimentoRepository;
     @MockBean
     private RoleRepository roleRepository;
-    // --- Fim dos Mocks ---
+
 
     @Test
     @DisplayName("Endpoint Público (POST /api/usuarios) deve permitir acesso sem token")
     void endpointPublico_POSTUsuarios_DevePermitirAcesso() throws Exception {
-        // ARRANGE
-        // Prepara a requisição
+
         UsuarioRequestDTO request = new UsuarioRequestDTO();
         request.setEmail("publico@teste.com");
         request.setNome("Usuario Publico");
         request.setSenha("123456");
         request.setIdRole(1L);
 
-        // Prepara a resposta mockada do serviço
         UsuarioResponseDTO response = new UsuarioResponseDTO(1L, "Usuario Publico", "publico@teste.com", null, null);
         when(usuarioService.criarUsuario(any(UsuarioRequestDTO.class))).thenReturn(response);
 
-        // ACT & ASSERT
-        // Executa a chamada SEM token (.with(jwt()))
+
         mockMvc.perform(post("/api/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -98,28 +90,25 @@ public class SecurityConfigTest {
     @Test
     @DisplayName("Endpoint Protegido (GET /api/usuarios/1) deve retornar 401 Unauthorized sem token")
     void endpointProtegido_GETUsuario_SemToken_DeveRetornar401() throws Exception {
-        // ACT & ASSERT
-        // Executa a chamada SEM token
+
         mockMvc.perform(get("/api/usuarios/1"))
-                .andExpect(status().isUnauthorized()); // Espera 401
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("Endpoint Protegido (GET /api/usuarios/1) deve retornar 200 OK com token")
     void endpointProtegido_GETUsuario_ComToken_DeveRetornar200() throws Exception {
-        // ARRANGE
-        // Prepara a resposta mockada do serviço
+
         Usuario mockUser = new Usuario();
         mockUser.setId(1L);
         mockUser.setNome("Test User");
         mockUser.setEmail("test@user.com");
         when(usuarioService.findUserById(1L)).thenReturn(mockUser);
 
-        // ACT & ASSERT
-        // Executa a chamada COM token
+
         mockMvc.perform(get("/api/usuarios/1")
-                        .with(jwt())) // Simula um token JWT válido (qualquer role)
-                .andExpect(status().isOk()) // Espera 200 OK
+                        .with(jwt()))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.nome", is("Test User")));
     }
@@ -129,21 +118,19 @@ public class SecurityConfigTest {
     void endpointAdmin_DELETEUsuario_ComRoleUser_DeveRetornar403() throws Exception {
 
         mockMvc.perform(delete("/api/usuarios/1")
-                        .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_USER")))) // Token com role USER
+                        .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_USER"))))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("Endpoint Admin (DELETE /api/usuarios/1) deve retornar 204 No Content para role ADMIN")
     void endpointAdmin_DELETEUsuario_ComRoleAdmin_DeveRetornar204() throws Exception {
-        // ARRANGE
-        // Simula a resposta do serviço
+
         when(usuarioService.deletarUsuario(1L)).thenReturn(HttpStatus.NO_CONTENT);
 
-        // ACT & ASSERT
-        // Executa a chamada COM token de ADMIN
+
         mockMvc.perform(delete("/api/usuarios/1")
-                        .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_ADMIN")))) // Token com role ADMIN
-                .andExpect(status().isNoContent()); // Espera 204 No Content
+                        .with(jwt().authorities(new SimpleGrantedAuthority("SCOPE_ADMIN"))))
+                .andExpect(status().isNoContent());
     }
 }

@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > CupomRepository</title>
+  <title>Coverage Report > PromocaoDTO</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,28 +19,19 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.cupom.repository</a>
+    <a href="../index.html">com.eti.qualaboa.promocao.dto</a>
 </div>
 
-<h1>Coverage Summary for Class: CupomRepository (com.eti.qualaboa.cupom.repository)</h1>
+<h1>Coverage Summary for Class: PromocaoDTO (com.eti.qualaboa.promocao.dto)</h1>
 
 <table class="coverageStats">
-
 <tr>
   <th class="name">Class</th>
 </tr>
-  <tr>
-    <td class="name">CupomRepository$MockitoMock$cbhGmEN4</td>
-  </tr>
-  <tr>
-    <td class="name">CupomRepository$MockitoMock$cbhGmEN4$auxiliary$DOXRD7BY</td>
-  </tr>
-  <tr>
-    <td class="name">CupomRepository$MockitoMock$cbhGmEN4$auxiliary$HAAaWVaS</td>
-  </tr>
 <tr>
-  <td class="name"><strong>Total</strong></td>
+  <td class="name">PromocaoDTO</td>
 </tr>
+
 </table>
 
 <br/>
@@ -48,16 +39,24 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.cupom.repository;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.promocao.dto;
 &nbsp;
-&nbsp;import com.eti.qualaboa.cupom.model.Cupom;
-&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
-&nbsp;import java.util.List;
+&nbsp;import lombok.*;
 &nbsp;
-&nbsp;public interface CupomRepository extends JpaRepository&lt;Cupom, Long&gt; {
-&nbsp;    List&lt;Cupom&gt; findByEstabelecimentoIdEstabelecimento(Long idEstabelecimento);
+&nbsp;@Data
+&nbsp;@NoArgsConstructor
+&nbsp;@AllArgsConstructor
+&nbsp;@Builder
+&nbsp;public class PromocaoDTO {
+&nbsp;    private Long idPromocao;
+&nbsp;    private Long idEstabelecimento;
+&nbsp;    private Long idCupom;
+&nbsp;    private String descricao;
+&nbsp;    private double desconto;
+&nbsp;    private int totalVisualizacoes;
+&nbsp;    private int totalCliques;
+&nbsp;    private boolean ativa;
 &nbsp;}
-&nbsp;
 </code>
 </pre>
 </div>
@@ -81,7 +80,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

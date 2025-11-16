@@ -22,18 +22,17 @@ import org.testcontainers.utility.DockerImageName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
-@DataJpaTest // Foca apenas na camada de persistência JPA
+@DataJpaTest
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Desliga o H2
-@ContextConfiguration(initializers = EnderecoTest.Initializer.class) // Aplica as configs do container
-@TestPropertySource(properties = "spring.sql.init.mode=never") // Desabilita o data.sql
-@EntityScan(basePackages = "com.eti.qualaboa") // Garante que todas as entidades sejam escaneadas
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ContextConfiguration(initializers = EnderecoTest.Initializer.class)
+@TestPropertySource(properties = "spring.sql.init.mode=never")
+@EntityScan(basePackages = "com.eti.qualaboa")
 public class EnderecoTest {
 
     @Autowired
     private TestEntityManager testEntityManager;
 
-    // --- Configuração do Testcontainers (Padrão) ---
 
     @Container
     private static final PostgreSQLContainer<?> postgresContainer;
@@ -63,12 +62,10 @@ public class EnderecoTest {
         }
     }
 
-    // --- Fim da Configuração ---
 
     @Test
     @DisplayName("Deve persistir e recuperar um Endereco")
     void devePersistirERecuperarEndereco() {
-        // --- ARRANGE ---
         Endereco endereco = Endereco.builder()
                 .rua("Avenida Brasil")
                 .numero("1234")
@@ -80,16 +77,13 @@ public class EnderecoTest {
                 .longitude(-51.9389)
                 .build();
 
-        // --- ACT ---
-        // Salva a entidade no banco de teste
+
         Endereco enderecoSalvo = testEntityManager.persistAndFlush(endereco);
         Long idSalvo = enderecoSalvo.getIdEndereco();
 
-        // Limpa o cache do EntityManager para garantir que estamos lendo do banco
         testEntityManager.clear();
 
-        // --- ASSERT ---
-        // Busca a entidade do banco pelo ID
+
         Endereco enderecoDoBanco = testEntityManager.find(Endereco.class, idSalvo);
 
         assertThat(enderecoDoBanco).isNotNull();

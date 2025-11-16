@@ -44,7 +44,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (6/6)
+    (7/7)
   </span>
 </td>
 <td class="coverageStat">
@@ -52,7 +52,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (16/16)
+    (30/30)
   </span>
 </td>
 </tr>
@@ -72,7 +72,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (6/6)
+    (7/7)
   </span>
 </td>
 <td class="coverageStat">
@@ -80,7 +80,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (16/16)
+    (30/30)
   </span>
 </td>
 </tr>
@@ -110,9 +110,15 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 &nbsp;import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 &nbsp;import org.springframework.security.web.SecurityFilterChain;
+&nbsp;import org.springframework.web.cors.CorsConfiguration;
+&nbsp;import org.springframework.web.cors.CorsConfigurationSource;
+&nbsp;import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+&nbsp;
+&nbsp;import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 &nbsp;
 &nbsp;import java.security.interfaces.RSAPrivateKey;
 &nbsp;import java.security.interfaces.RSAPublicKey;
+&nbsp;import java.util.List;
 &nbsp;
 &nbsp;@Configuration
 &nbsp;@EnableWebSecurity
@@ -128,17 +134,35 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    @Bean
 &nbsp;    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 &nbsp;
-<b class="fc">&nbsp;        http.authorizeHttpRequests(authorize -&gt; authorize</b>
-<b class="fc">&nbsp;                .requestMatchers(HttpMethod.POST , &quot;/auth/login&quot;).permitAll()</b>
-<b class="fc">&nbsp;                .requestMatchers(HttpMethod.POST , &quot;/auth/login/estabelecimento&quot;).permitAll()</b>
-<b class="fc">&nbsp;                .requestMatchers(HttpMethod.POST , &quot;/api/usuarios&quot;).permitAll()</b>
-<b class="fc">&nbsp;                .requestMatchers(HttpMethod.POST, &quot;/estabelecimentos&quot;).permitAll()</b>
-<b class="fc">&nbsp;                .anyRequest().authenticated())</b>
+<b class="fc">&nbsp;        return  http</b>
+<b class="fc">&nbsp;                .cors(cors -&gt; cors.configurationSource(corsConfigurationSource()))</b>
 <b class="fc">&nbsp;                .csrf(csrf -&gt; csrf.disable())</b>
+<b class="fc">&nbsp;                .sessionManagement(session -&gt; session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))</b>
 <b class="fc">&nbsp;                .oauth2ResourceServer(oauth2 -&gt; oauth2.jwt(Customizer.withDefaults()))</b>
-<b class="fc">&nbsp;                .sessionManagement(session -&gt; session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));</b>
+<b class="fc">&nbsp;                .authorizeHttpRequests(authorize -&gt; authorize</b>
+<b class="fc">&nbsp;                        .requestMatchers(HttpMethod.OPTIONS, &quot;/**&quot;).permitAll()</b>
+<b class="fc">&nbsp;                        .requestMatchers(HttpMethod.POST , &quot;/auth/login&quot;).permitAll()</b>
+<b class="fc">&nbsp;                        .requestMatchers(HttpMethod.POST , &quot;/auth/login/estabelecimento&quot;).permitAll()</b>
+<b class="fc">&nbsp;                        .requestMatchers(HttpMethod.POST , &quot;/api/usuarios&quot;).permitAll()</b>
+<b class="fc">&nbsp;                        .requestMatchers(HttpMethod.POST, &quot;/estabelecimentos&quot;).permitAll()</b>
+<b class="fc">&nbsp;                        .requestMatchers(&quot;/v3/api-docs/**&quot;).permitAll()</b>
+<b class="fc">&nbsp;                        .requestMatchers(&quot;/swagger-ui/**&quot;).permitAll()</b>
+<b class="fc">&nbsp;                        .requestMatchers(&quot;/swagger-ui.html&quot;).permitAll()</b>
+<b class="fc">&nbsp;                        .anyRequest().authenticated()</b>
+&nbsp;                )
+<b class="fc">&nbsp;                .build();</b>
+&nbsp;    }
 &nbsp;
-<b class="fc">&nbsp;        return http.build();</b>
+&nbsp;    @Bean
+&nbsp;    public CorsConfigurationSource corsConfigurationSource() {
+<b class="fc">&nbsp;        CorsConfiguration configuration = new CorsConfiguration();</b>
+<b class="fc">&nbsp;        configuration.setAllowedOrigins(List.of(&quot;http://localhost:5173&quot;));</b>
+<b class="fc">&nbsp;        configuration.setAllowedMethods(List.of(&quot;GET&quot;, &quot;POST&quot;, &quot;PUT&quot;, &quot;PATCH&quot;, &quot;DELETE&quot;, &quot;OPTIONS&quot;));</b>
+<b class="fc">&nbsp;        configuration.setAllowedHeaders(List.of(&quot;Authorization&quot;, &quot;Content-Type&quot;));</b>
+<b class="fc">&nbsp;        configuration.setAllowCredentials(true);</b>
+<b class="fc">&nbsp;        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();</b>
+<b class="fc">&nbsp;        source.registerCorsConfiguration(&quot;/**&quot;, configuration);</b>
+<b class="fc">&nbsp;        return source;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @Bean
@@ -182,7 +206,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>
