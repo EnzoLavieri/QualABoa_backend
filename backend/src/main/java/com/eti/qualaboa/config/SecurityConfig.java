@@ -43,7 +43,7 @@ public class SecurityConfig {
     @Value("${jwt.private.key}")
     private RSAPrivateKey privateKey;
 
-    @Value("S{frontend.url}")
+    @Value("${frontend.url}")
     private String frontendUrl;
 
     @Bean
