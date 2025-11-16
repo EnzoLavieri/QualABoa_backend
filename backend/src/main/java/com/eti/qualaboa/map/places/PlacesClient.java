@@ -45,6 +45,22 @@ public class PlacesClient {
                 .block();
     }
 
+    public Map<String, Object> getPlaceReviews(String placeId) {
+        String baseUrl = "https://maps.googleapis.com/maps/api/place/details/json";
+        String fields = "name,rating,reviews,user_ratings_total";
+
+        String url = UriComponentsBuilder.fromUriString(baseUrl)
+                .queryParam("key", apiKey)
+                .queryParam("place_id", placeId)
+                .queryParam("fields", fields)
+                .build().toUriString();
+
+        return webClient.get().uri(url)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .block();
+    }
+
     public Map<String, Object> textSearch(String query, double lat, double lng, int radius) {
         String url = UriComponentsBuilder.fromUriString("https://maps.googleapis.com/maps/api/place/textsearch/json")
                 .queryParam("key", apiKey)

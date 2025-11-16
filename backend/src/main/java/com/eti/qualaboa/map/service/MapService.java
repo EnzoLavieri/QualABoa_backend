@@ -131,4 +131,23 @@ public class MapService {
         }
         return details;
     }
+
+    public Map<String, Object> getPlaceReviewsCached(String placeId) {
+        Cache cache = cacheManager.getCache("placeReviews");
+        if (cache != null) {
+            Map<String, Object> cached = cache.get(placeId, Map.class);
+            if (cached != null) {
+                log.info("Cache HIT para reviews {}", placeId);
+                return cached;
+            }
+        }
+
+        Map<String, Object> reviews = placesClient.getPlaceReviews(placeId);
+
+        if (cache != null && reviews != null) {
+            cache.put(placeId, reviews);
+        }
+
+        return reviews;
+    }
 }

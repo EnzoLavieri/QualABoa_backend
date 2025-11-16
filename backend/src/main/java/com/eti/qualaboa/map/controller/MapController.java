@@ -32,4 +32,10 @@ public class MapController {
         Map<String, Object> details = mapService.getPlaceDetailsCached(placeId);
         return ResponseEntity.ok(details);
     }
+
+    @GetMapping("/places/{placeId}/reviews")
+    public ResponseEntity<Map<String, Object>> placeReviews(@PathVariable String placeId) {
+        Map<String, Object> reviews = mapService.getPlaceReviewsCached(placeId);
+        return ResponseEntity.ok(reviews);
+    }
 }
