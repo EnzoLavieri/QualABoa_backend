@@ -26,12 +26,12 @@ import org.testcontainers.utility.DockerImageName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
-@DataJpaTest // Foca apenas na camada de persistência JPA
+@DataJpaTest
 @ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Desliga o H2
-@ContextConfiguration(initializers = EventoTest.Initializer.class) // Aplica as configs do container
-@TestPropertySource(properties = "spring.sql.init.mode=never") // Desabilita o data.sql
-@EntityScan(basePackages = "com.eti.qualaboa") // Escaneia todas as entidades
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ContextConfiguration(initializers = EventoTest.Initializer.class)
+@TestPropertySource(properties = "spring.sql.init.mode=never")
+@EntityScan(basePackages = "com.eti.qualaboa")
 public class EventoTest {
 
     @Autowired
@@ -40,7 +40,6 @@ public class EventoTest {
     private Estabelecimento estSalvo;
     private Cupom cupomSalvo;
 
-    // --- Configuração do Testcontainers (igual aos outros testes) ---
 
     @Container
     private static final PostgreSQLContainer<?> postgresContainer;
@@ -70,29 +69,22 @@ public class EventoTest {
         }
     }
 
-    // --- Fim da Configuração do Testcontainers ---
 
 
-    /**
-     * Prepara as dependências (Estabelecimento e Cupom) antes de cada teste.
-     */
     @BeforeEach
     void setUpDependencies() {
-        // 1. Criar e salvar a dependência obrigatória: Estabelecimento
         Estabelecimento est = new Estabelecimento();
         est.setNome("Bar do Teste de Evento");
         est.setEmail("evento@teste.com");
         est.setSenha("123");
         this.estSalvo = testEntityManager.persist(est);
 
-        // 2. Criar e salvar a dependência opcional: Cupom
         Cupom cupom = new Cupom();
         cupom.setCodigo("EVENTO10");
         cupom.setTipo(TipoCupom.DESCONTO);
-        cupom.setEstabelecimento(this.estSalvo); // Cupom também precisa de um estabelecimento
+        cupom.setEstabelecimento(this.estSalvo);
         this.cupomSalvo = testEntityManager.persist(cupom);
 
-        // Garante que o flush e clear ocorram antes do próximo teste
         testEntityManager.flush();
         testEntityManager.clear();
     }
@@ -100,8 +92,7 @@ public class EventoTest {
     @Test
     @DisplayName("Deve persistir Evento com Cupom e Estabelecimento")
     void devePersistirEventoCompleto() {
-        // --- ARRANGE ---
-        // As dependências (estSalvo e cupomSalvo) já foram criadas no @BeforeEach
+
 
         Evento evento = Evento.builder()
                 .titulo("Show de Rock")
@@ -112,20 +103,17 @@ public class EventoTest {
                 .cupom(cupomSalvo)
                 .build();
 
-        // --- ACT ---
         Evento eventoSalvo = testEntityManager.persistAndFlush(evento);
         Long eventoId = eventoSalvo.getIdEvento();
-        testEntityManager.clear(); // Limpa o cache para forçar a busca no DB
+        testEntityManager.clear();
 
-        // --- ASSERT ---
         Evento eventoDoBanco = testEntityManager.find(Evento.class, eventoId);
 
         assertThat(eventoDoBanco).isNotNull();
         assertThat(eventoDoBanco.getTitulo()).isEqualTo("Show de Rock");
         assertThat(eventoDoBanco.getData()).isEqualTo("2025-12-25");
-        assertThat(eventoDoBanco.getTotalCliques()).isEqualTo(0); // Verifica valor default
+        assertThat(eventoDoBanco.getTotalCliques()).isEqualTo(0);
 
-        // Verifica os relacionamentos
         assertThat(eventoDoBanco.getEstabelecimento()).isNotNull();
         assertThat(eventoDoBanco.getEstabelecimento().getIdEstabelecimento()).isEqualTo(estSalvo.getIdEstabelecimento());
         assertThat(eventoDoBanco.getCupom()).isNotNull();
@@ -135,8 +123,7 @@ public class EventoTest {
     @Test
     @DisplayName("Deve persistir Evento sem Cupom")
     void devePersistirEventoSemCupom() {
-        // --- ARRANGE ---
-        // O estSalvo já foi criado no @BeforeEach
+
 
         Evento evento = Evento.builder()
                 .titulo("Pagode Acústico")
@@ -144,15 +131,13 @@ public class EventoTest {
                 .data("2025-11-20")
                 .horario("19:00")
                 .estabelecimento(estSalvo)
-                .cupom(null) // Testa o caso onde o cupom é nulo
+                .cupom(null)
                 .build();
 
-        // --- ACT ---
         Evento eventoSalvo = testEntityManager.persistAndFlush(evento);
         Long eventoId = eventoSalvo.getIdEvento();
         testEntityManager.clear();
 
-        // --- ASSERT ---
         Evento eventoDoBanco = testEntityManager.find(Evento.class, eventoId);
 
         assertThat(eventoDoBanco).isNotNull();
@@ -160,7 +145,6 @@ public class EventoTest {
         assertThat(eventoDoBanco.getEstabelecimento()).isNotNull();
         assertThat(eventoDoBanco.getEstabelecimento().getIdEstabelecimento()).isEqualTo(estSalvo.getIdEstabelecimento());
 
-        // Verifica a asserção principal
         assertThat(eventoDoBanco.getCupom()).isNull();
     }
 }

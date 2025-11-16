@@ -31,17 +31,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(initializers = CupomTest.Initializer.class)
-@TestPropertySource(properties = "spring.sql.init.mode=never") // Desabilita o data.sql
-@EntityScan(basePackages = "com.eti.qualaboa") // Garante que todas as entidades sejam escaneadas
+@TestPropertySource(properties = "spring.sql.init.mode=never")
+@EntityScan(basePackages = "com.eti.qualaboa")
 public class CupomTest {
 
     @Autowired
     private TestEntityManager testEntityManager;
 
-    // Dependência obrigatória para um Cupom
     private Estabelecimento estSalvo;
 
-    // --- Configuração do Testcontainers (Padrão) ---
 
     @Container
     private static final PostgreSQLContainer<?> postgresContainer;
@@ -71,26 +69,21 @@ public class CupomTest {
         }
     }
 
-    // --- Fim da Configuração ---
 
-    /**
-     * Salva a dependência (Estabelecimento) antes de cada teste.
-     */
     @BeforeEach
     void setUpDependencies() {
         Estabelecimento est = new Estabelecimento();
         est.setNome("Bar do Teste de Cupom");
         est.setEmail("cupom@teste.com");
         est.setSenha("123");
-        this.estSalvo = testEntityManager.persistFlushFind(est); // Salva e recupera com ID
-        testEntityManager.clear(); // Limpa o cache
+        this.estSalvo = testEntityManager.persistFlushFind(est);
+        testEntityManager.clear();
     }
 
     @Test
     @DisplayName("Deve persistir um Cupom com Estabelecimento")
     void devePersistirCupomCompleto() {
-        // --- ARRANGE ---
-        // O estSalvo já foi criado no @BeforeEach
+
         LocalDateTime dataInicio = LocalDateTime.of(2025, 12, 1, 0, 0);
         LocalDateTime dataFim = LocalDateTime.of(2025, 12, 25, 23, 59);
 
@@ -104,15 +97,13 @@ public class CupomTest {
                 .ativo(true)
                 .quantidadeTotal(100)
                 .quantidadeUsada(0)
-                .estabelecimento(estSalvo) // Relacionamento @ManyToOne
+                .estabelecimento(estSalvo)
                 .build();
 
-        // --- ACT ---
         Cupom cupomSalvo = testEntityManager.persistAndFlush(cupom);
         Long idSalvo = cupomSalvo.getIdCupom();
-        testEntityManager.clear(); // Limpa o cache
+        testEntityManager.clear();
 
-        // --- ASSERT ---
         Cupom cupomDoBanco = testEntityManager.find(Cupom.class, idSalvo);
 
         assertThat(cupomDoBanco).isNotNull();
@@ -122,9 +113,7 @@ public class CupomTest {
         assertThat(cupomDoBanco.getValor()).isEqualTo(25.0);
         assertThat(cupomDoBanco.getDataFim()).isEqualTo(dataFim);
         assertThat(cupomDoBanco.isAtivo()).isTrue();
-        assertThat(cupomDoBanco.getQuantidadeUsada()).isEqualTo(0); // Verifica valor default
-
-        // Verifica o relacionamento
+        assertThat(cupomDoBanco.getQuantidadeUsada()).isEqualTo(0);
         assertThat(cupomDoBanco.getEstabelecimento()).isNotNull();
         assertThat(cupomDoBanco.getEstabelecimento().getIdEstabelecimento()).isEqualTo(estSalvo.getIdEstabelecimento());
         assertThat(cupomDoBanco.getEstabelecimento().getNome()).isEqualTo("Bar do Teste de Cupom");

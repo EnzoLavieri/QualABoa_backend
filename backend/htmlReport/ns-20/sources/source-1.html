@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > Cupom</title>
+  <title>Coverage Report > Evento</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,10 +19,10 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.cupom.model</a>
+    <a href="../index.html">com.eti.qualaboa.evento.model</a>
 </div>
 
-<h1>Coverage Summary for Class: Cupom (com.eti.qualaboa.cupom.model)</h1>
+<h1>Coverage Summary for Class: Evento (com.eti.qualaboa.evento.model)</h1>
 
 <table class="coverageStats">
 
@@ -30,10 +30,10 @@ Current scope:     <a href="../../index.html">all classes</a>
   <th class="name">Class</th>
 </tr>
   <tr>
-    <td class="name">Cupom$HibernateInstantiator</td>
+    <td class="name">Evento$HibernateInstantiator</td>
   </tr>
   <tr>
-    <td class="name">Cupom$HibernateProxy</td>
+    <td class="name">Evento$HibernateProxy</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
@@ -45,43 +45,39 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.cupom.model;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.evento.model;
 &nbsp;
-&nbsp;import com.eti.qualaboa.enums.TipoCupom;
 &nbsp;import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
+&nbsp;import com.eti.qualaboa.cupom.model.Cupom;
 &nbsp;import jakarta.persistence.*;
 &nbsp;import lombok.*;
 &nbsp;
-&nbsp;import java.time.LocalDateTime;
-&nbsp;
 &nbsp;@Entity
-&nbsp;@Table(name = &quot;cupons&quot;)
+&nbsp;@Table(name = &quot;eventos&quot;)
 &nbsp;@Data
 &nbsp;@NoArgsConstructor
 &nbsp;@AllArgsConstructor
 &nbsp;@Builder
-&nbsp;public class Cupom {
+&nbsp;public class Evento {
 &nbsp;
 &nbsp;    @Id
 &nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
-&nbsp;    private Long idCupom;
-&nbsp;
-&nbsp;    private String codigo;
-&nbsp;    private String descricao;
-&nbsp;
-&nbsp;    @Enumerated(EnumType.STRING)
-&nbsp;    private TipoCupom tipo; //DESCONTO, CASHBACK, etc.
-&nbsp;
-&nbsp;    private Double valor;
-&nbsp;    private LocalDateTime dataInicio;
-&nbsp;    private LocalDateTime dataFim;
-&nbsp;    private boolean ativo = true;
-&nbsp;    private int quantidadeTotal;
-&nbsp;    private int quantidadeUsada = 0;
+&nbsp;    private Long idEvento;
 &nbsp;
 &nbsp;    @ManyToOne(fetch = FetchType.LAZY)
 &nbsp;    @JoinColumn(name = &quot;idEstabelecimento&quot;, nullable = false)
 &nbsp;    private Estabelecimento estabelecimento;
+&nbsp;
+&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
+&nbsp;    @JoinColumn(name = &quot;idCupom&quot;)
+&nbsp;    private Cupom cupom;
+&nbsp;
+&nbsp;    private String descricao;
+&nbsp;    private String titulo;
+&nbsp;    private String data;
+&nbsp;    private String horario;
+&nbsp;    private int totalVisualizacoes;
+&nbsp;    private int totalCliques;
 &nbsp;}
 </code>
 </pre>
@@ -106,7 +102,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>
