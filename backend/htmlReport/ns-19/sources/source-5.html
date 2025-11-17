@@ -1,0 +1,101 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UsuarioRequestDTO</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.eti.qualaboa.usuario.dto</a>
+</div>
+
+<h1>Coverage Summary for Class: UsuarioRequestDTO (com.eti.qualaboa.usuario.dto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">UsuarioRequestDTO</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.usuario.dto;
+&nbsp;
+&nbsp;import com.eti.qualaboa.enums.Sexo;
+&nbsp;import com.eti.qualaboa.usuario.domain.entity.Role;
+&nbsp;import jakarta.persistence.Column;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import jakarta.validation.constraints.Email;
+&nbsp;import jakarta.validation.constraints.NotBlank;
+&nbsp;import jakarta.validation.constraints.NotNull;
+&nbsp;import lombok.Data;
+&nbsp;import lombok.ToString;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@Data
+&nbsp;@ToString
+&nbsp;public class UsuarioRequestDTO {
+&nbsp;
+&nbsp;    @NotBlank(message = &quot;O nome é obrigatório.&quot;)
+&nbsp;    private String nome;
+&nbsp;
+&nbsp;    @Email(message = &quot;O formato do e-mail é inválido.&quot;)
+&nbsp;    @NotBlank(message = &quot;O e-mail é obrigatório.&quot;)
+&nbsp;    private String email;
+&nbsp;
+&nbsp;    @NotBlank(message = &quot;A senha é obrigatória.&quot;)
+&nbsp;    private String senha;
+&nbsp;
+&nbsp;    private Long idRole;
+&nbsp;
+&nbsp;    private List&lt;String&gt; preferenciasUsuario;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
+</div>
+</body>
+</html>

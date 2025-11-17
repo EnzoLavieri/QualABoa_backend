@@ -32,20 +32,19 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(EstabelecimentoController.class) // Carrega o contexto web apenas para este controller
-@Import(SecurityConfig.class) // Importa nossa config de segurança (para desabilitar CSRF, etc.)
+@WebMvcTest(EstabelecimentoController.class)
+@Import(SecurityConfig.class)
 public class EstabelecimentoControllerTest {
 
     @Autowired
-    private MockMvc mockMvc; // Para simular requisições HTTP
+    private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper; // Para converter Objetos <-> JSON
+    private ObjectMapper objectMapper;
 
-    @MockBean // Simula o service (não usa o service real)
+    @MockBean
     private EstabelecimentoService estabelecimentoService;
 
-    // --- Objetos Mock para usar nos testes ---
     private EstabelecimentoRegisterDTO registerDTO;
     private EstabelecimentoResponseDTO responseDTO;
     private EstabelecimentoDTO estabelecimentoDTO;
@@ -54,34 +53,29 @@ public class EstabelecimentoControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Objeto DTO para registrar
         registerDTO = new EstabelecimentoRegisterDTO();
         registerDTO.setNome("Bar do Teste");
         registerDTO.setEmail("teste@bar.com");
         registerDTO.setSenha("123456");
         registerDTO.setIdRole(3L);
 
-        // Objeto DTO de resposta (criado)
         responseDTO = new EstabelecimentoResponseDTO(
                 1L, "Bar do Teste", "teste@bar.com", "bar",
                 "Descrição", "123456", true, "place123", -23.0, -51.0,
                 "Rua Teste, 123", null, 5.0, List.of("wifi")
         );
 
-        // Objeto DTO padrão (para listagem/atualização)
         estabelecimentoDTO = EstabelecimentoDTO.builder()
                 .idEstabelecimento(1L)
                 .nome("Bar do Teste")
                 .placeId("place123")
                 .build();
 
-        // Objeto Entidade padrão (para busca por ID)
         estabelecimento = Estabelecimento.builder()
                 .idEstabelecimento(1L)
                 .nome("Bar do Teste")
                 .build();
 
-        // Objeto Cupom DTO (para listar cupons)
         cupomDTO = CupomDTO.builder()
                 .idCupom(1L)
                 .codigo("TESTE10")
@@ -90,15 +84,12 @@ public class EstabelecimentoControllerTest {
                 .build();
     }
 
-    // --- Testes de Segurança ---
 
     @Test
     @DisplayName("POST /estabelecimentos - Deve permitir acesso público")
     void criar_DevePermitirAcessoPublico() throws Exception {
-        // ARRANGE
         when(estabelecimentoService.criar(any(EstabelecimentoRegisterDTO.class))).thenReturn(responseDTO);
 
-        // ACT & ASSERT
         mockMvc.perform(post("/estabelecimentos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerDTO)))
@@ -128,17 +119,14 @@ public class EstabelecimentoControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // --- Testes de Funcionalidade (Autenticado) ---
 
     @Test
     @DisplayName("GET /estabelecimentos - Deve retornar lista com autenticação")
     void listarTodos_ComAutenticacao_DeveRetornarLista() throws Exception {
-        // ARRANGE
         when(estabelecimentoService.listarTodos()).thenReturn(List.of(estabelecimentoDTO));
 
-        // ACT & ASSERT
         mockMvc.perform(get("/estabelecimentos")
-                        .with(jwt())) // Simula um JWT válido
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nome", is("Bar do Teste")));
     }
@@ -146,12 +134,10 @@ public class EstabelecimentoControllerTest {
     @Test
     @DisplayName("GET /{id} - Deve retornar estabelecimento com autenticação")
     void buscarPorId_ComAutenticacao_DeveRetornarEstabelecimento() throws Exception {
-        // ARRANGE
         when(estabelecimentoService.buscarPorId(1L)).thenReturn(estabelecimento);
 
-        // ACT & ASSERT
         mockMvc.perform(get("/estabelecimentos/1")
-                        .with(jwt())) // Simula um JWT válido
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idEstabelecimento", is(1)));
     }
@@ -159,12 +145,10 @@ public class EstabelecimentoControllerTest {
     @Test
     @DisplayName("PUT /{id} - Deve atualizar estabelecimento com autenticação")
     void atualizar_ComAutenticacao_DeveRetornarDTO() throws Exception {
-        // ARRANGE
         when(estabelecimentoService.atualizar(eq(1L), any(Estabelecimento.class))).thenReturn(estabelecimentoDTO);
 
-        // ACT & ASSERT
         mockMvc.perform(put("/estabelecimentos/1")
-                        .with(jwt()) // Simula um JWT válido
+                        .with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estabelecimento)))
                 .andExpect(status().isOk())
@@ -174,26 +158,22 @@ public class EstabelecimentoControllerTest {
     @Test
     @DisplayName("DELETE /{id} - Deve deletar estabelecimento com autenticação")
     void deletar_ComAutenticacao_DeveRetornarNoContent() throws Exception {
-        // ARRANGE
         doNothing().when(estabelecimentoService).deletar(1L);
 
-        // ACT & ASSERT
         mockMvc.perform(delete("/estabelecimentos/1")
-                        .with(jwt())) // Simula um JWT válido
+                        .with(jwt()))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("PUT /{id}/link-place - Deve vincular place com autenticação")
     void vincularPlace_ComAutenticacao_DeveRetornarDTO() throws Exception {
-        // ARRANGE
         String placeId = "place_teste_123";
         when(estabelecimentoService.vincularComPlace(1L, placeId)).thenReturn(estabelecimentoDTO);
 
-        // ACT & ASSERT
         mockMvc.perform(put("/estabelecimentos/1/link-place")
-                        .param("placeId", placeId) // Adiciona o RequestParam
-                        .with(jwt())) // Simula um JWT válido
+                        .param("placeId", placeId)
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.placeId", is("place123")));
     }
@@ -201,12 +181,10 @@ public class EstabelecimentoControllerTest {
     @Test
     @DisplayName("GET /cupons/{id} - Deve listar cupons com autenticação")
     void listarCupons_ComAutenticacao_DeveRetornarListaDeCupons() throws Exception {
-        // ARRANGE
         when(estabelecimentoService.listarCuponsPorEstabelecimento(1L)).thenReturn(List.of(cupomDTO));
 
-        // ACT & ASSERT
         mockMvc.perform(get("/estabelecimentos/cupons/1")
-                        .with(jwt())) // Simula um JWT válido
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].codigo", is("TESTE10")));
     }

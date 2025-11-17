@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > PromocaoController</title>
+  <title>Coverage Report > CliquesPorDiaDTO</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,10 +19,10 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.promocao.controller</a>
+    <a href="../index.html">com.eti.qualaboa.metricas.dto</a>
 </div>
 
-<h1>Coverage Summary for Class: PromocaoController (com.eti.qualaboa.promocao.controller)</h1>
+<h1>Coverage Summary for Class: CliquesPorDiaDTO (com.eti.qualaboa.metricas.dto)</h1>
 
 <table class="coverageStats">
 <tr>
@@ -41,29 +41,29 @@ Current scope:     <a href="../../index.html">all classes</a>
 </th>
 </tr>
 <tr>
-  <td class="name">PromocaoController</td>
+  <td class="name">CliquesPorDiaDTO</td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (1/1)
+    (0/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (5/5)
+    (0/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    100%
+    0%
   </span>
   <span class="absValue">
-    (6/6)
+    (0/3)
   </span>
 </td>
 </tr>
@@ -75,47 +75,24 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.promocao.controller;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.metricas.dto;
 &nbsp;
-&nbsp;import com.eti.qualaboa.promocao.dto.PromocaoDTO;
-&nbsp;import com.eti.qualaboa.promocao.service.PromocaoService;
-&nbsp;import lombok.RequiredArgsConstructor;
-&nbsp;import org.springframework.http.ResponseEntity;
-&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.Setter;
 &nbsp;
-&nbsp;import java.util.List;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.Date;
 &nbsp;
-&nbsp;@RestController
-&nbsp;@RequestMapping(&quot;/promocoes&quot;)
-&nbsp;@RequiredArgsConstructor
-&nbsp;public class PromocaoController {
+&nbsp;@Getter
+&nbsp;@Setter
+&nbsp;public class CliquesPorDiaDTO {
 &nbsp;
-&nbsp;    private final PromocaoService promocaoService;
+&nbsp;    private Date data;
+&nbsp;    private Long total;
 &nbsp;
-&nbsp;    @GetMapping
-&nbsp;    public List&lt;PromocaoDTO&gt; listarTodas() {
-<b class="fc">&nbsp;        return promocaoService.listarTodas();</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @GetMapping(&quot;/{id}&quot;)
-&nbsp;    public ResponseEntity&lt;PromocaoDTO&gt; buscarPorId(@PathVariable Long id) {
-<b class="fc">&nbsp;        return ResponseEntity.ok(promocaoService.buscarPorId(id));</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @PostMapping
-&nbsp;    public ResponseEntity&lt;PromocaoDTO&gt; criar(@RequestBody PromocaoDTO dto) {
-<b class="fc">&nbsp;        return ResponseEntity.ok(promocaoService.criarPromocao(dto));</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @PutMapping(&quot;/{id}&quot;)
-&nbsp;    public ResponseEntity&lt;PromocaoDTO&gt; atualizar(@PathVariable Long id, @RequestBody PromocaoDTO dto) {
-<b class="fc">&nbsp;        return ResponseEntity.ok(promocaoService.atualizarPromocao(id, dto));</b>
-&nbsp;    }
-&nbsp;
-&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
-&nbsp;    public ResponseEntity&lt;Void&gt; deletar(@PathVariable Long id) {
-<b class="fc">&nbsp;        promocaoService.deletarPromocao(id);</b>
-<b class="fc">&nbsp;        return ResponseEntity.noContent().build();</b>
+<b class="nc">&nbsp;    public CliquesPorDiaDTO(Date data, Long total) {</b>
+<b class="nc">&nbsp;        this.data = data;</b>
+<b class="nc">&nbsp;        this.total = total;</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -141,7 +118,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

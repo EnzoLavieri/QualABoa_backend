@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > RoleRepository</title>
+  <title>Coverage Report > MetricasRepository</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,28 +19,19 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.usuario.repository</a>
+    <a href="../index.html">com.eti.qualaboa.metricas.repository</a>
 </div>
 
-<h1>Coverage Summary for Class: RoleRepository (com.eti.qualaboa.usuario.repository)</h1>
+<h1>Coverage Summary for Class: MetricasRepository (com.eti.qualaboa.metricas.repository)</h1>
 
 <table class="coverageStats">
-
 <tr>
   <th class="name">Class</th>
 </tr>
-  <tr>
-    <td class="name">RoleRepository$MockitoMock$jLeeWImy</td>
-  </tr>
-  <tr>
-    <td class="name">RoleRepository$MockitoMock$jLeeWImy$auxiliary$GfPNskzB</td>
-  </tr>
-  <tr>
-    <td class="name">RoleRepository$MockitoMock$jLeeWImy$auxiliary$WAntOF8e</td>
-  </tr>
 <tr>
-  <td class="name"><strong>Total</strong></td>
+  <td class="name">MetricasRepository</td>
 </tr>
+
 </table>
 
 <br/>
@@ -48,17 +39,15 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.usuario.repository;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.metricas.repository;
 &nbsp;
-&nbsp;import com.eti.qualaboa.usuario.domain.entity.Role;
+&nbsp;import com.eti.qualaboa.metricas.model.LogClique;
 &nbsp;import org.springframework.data.jpa.repository.JpaRepository;
 &nbsp;import org.springframework.stereotype.Repository;
 &nbsp;
-&nbsp;import java.util.Optional;
-&nbsp;
 &nbsp;@Repository
-&nbsp;public interface RoleRepository extends JpaRepository&lt;Role,Long&gt; {
-&nbsp;    Optional&lt;Role&gt; findByNome(String role);
+&nbsp;public interface MetricasRepository extends JpaRepository&lt;LogClique, Long&gt; {
+&nbsp;    Long id(Long id);
 &nbsp;}
 </code>
 </pre>
@@ -83,7 +72,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

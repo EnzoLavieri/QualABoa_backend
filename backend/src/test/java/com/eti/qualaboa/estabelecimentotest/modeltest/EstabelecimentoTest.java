@@ -33,17 +33,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(initializers = EstabelecimentoTest.Initializer.class)
-@TestPropertySource(properties = "spring.sql.init.mode=never") // Desabilita o data.sql
-@EntityScan(basePackages = "com.eti.qualaboa") // Garante que todas as entidades sejam escaneadas
+@TestPropertySource(properties = "spring.sql.init.mode=never")
+@EntityScan(basePackages = "com.eti.qualaboa")
 public class EstabelecimentoTest {
 
     @Autowired
     private TestEntityManager testEntityManager;
 
-    // Dependência: Role "ESTABELECIMENTO"
     private Role roleEstabelecimento;
 
-    // --- Configuração do Testcontainers (Padrão) ---
 
     @Container
     private static final PostgreSQLContainer<?> postgresContainer;
@@ -73,25 +71,19 @@ public class EstabelecimentoTest {
         }
     }
 
-    // --- Fim da Configuração ---
 
-    /**
-     * Salva as dependências (Role) antes de cada teste.
-     */
     @BeforeEach
     void setUpDependencies() {
         Role role = new Role();
         role.setNome("ESTABELECIMENTO");
         this.roleEstabelecimento = testEntityManager.persist(role);
-        testEntityManager.clear(); // Limpa o cache
+        testEntityManager.clear();
     }
 
     @Test
     @DisplayName("Deve persistir um Estabelecimento com todos os relacionamentos")
     void devePersistirEstabelecimentoCompleto() {
-        // --- ARRANGE ---
 
-        // 1. Criar o Endereco (que será salvo em cascata)
         Endereco endereco = Endereco.builder()
                 .rua("Rua Teste")
                 .numero("123")
@@ -99,13 +91,10 @@ public class EstabelecimentoTest {
                 .cep("87000-000")
                 .build();
 
-        // 2. Criar a imagem de perfil
         byte[] imagemBytes = "imagem_fake".getBytes(StandardCharsets.UTF_8);
 
-        // 3. Criar a lista de conveniencias
         List<String> conveniencias = List.of("wifi", "musica ao vivo");
 
-        // 4. Criar o Estabelecimento
         Estabelecimento est = Estabelecimento.builder()
                 .nome("Bar do Teste")
                 .email("bar@teste.com")
@@ -119,20 +108,18 @@ public class EstabelecimentoTest {
                 .latitude(-23.42)
                 .longitude(-51.93)
                 .enderecoFormatado("Rua Teste, 123, Maringá")
-                .endereco(endereco) // Relacionamento @OneToOne
+                .endereco(endereco)
                 .fotoUrl( "imagem_fake")
-                .conveniencias(conveniencias) // @ElementCollection
-                .roles(Set.of(roleEstabelecimento)) // Relacionamento @ManyToMany
+                .conveniencias(conveniencias)
+                .roles(Set.of(roleEstabelecimento))
                 .build();
 
-        // --- ACT ---
         Estabelecimento estSalvo = testEntityManager.persistAndFlush(est);
         Long idSalvo = estSalvo.getIdEstabelecimento();
         Long idEnderecoSalvo = estSalvo.getEndereco().getIdEndereco();
 
-        testEntityManager.clear(); // Limpa o cache para forçar a busca no DB
+        testEntityManager.clear();
 
-        // --- ASSERT ---
         Estabelecimento estDoBanco = testEntityManager.find(Estabelecimento.class, idSalvo);
 
         assertThat(estDoBanco).isNotNull();
@@ -140,16 +127,13 @@ public class EstabelecimentoTest {
         assertThat(estDoBanco.getClassificacao()).isEqualTo(4.5);
         assertThat(new String(estDoBanco.getFotoUrl())).isEqualTo("imagem_fake");
 
-        // Verifica o Endereço (Cascade Persist)
         assertThat(estDoBanco.getEndereco()).isNotNull();
         assertThat(estDoBanco.getEndereco().getIdEndereco()).isEqualTo(idEnderecoSalvo);
         assertThat(estDoBanco.getEndereco().getCidade()).isEqualTo("Maringá");
 
-        // Verifica a Lista de Conveniencias
         assertThat(estDoBanco.getConveniencias()).isNotNull().hasSize(2);
         assertThat(estDoBanco.getConveniencias()).containsExactlyInAnyOrder("wifi", "musica ao vivo");
 
-        // Verifica a Role
         assertThat(estDoBanco.getRoles()).isNotNull().hasSize(1);
         assertThat(estDoBanco.getRoles().iterator().next().getNome()).isEqualTo("ESTABELECIMENTO");
     }

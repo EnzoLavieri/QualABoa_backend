@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > Role</title>
+  <title>Coverage Report > PromocaoController</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,15 +19,18 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.usuario.domain.entity</a>
+    <a href="../index.html">com.eti.qualaboa.promocao.controller</a>
 </div>
 
-<h1>Coverage Summary for Class: Role (com.eti.qualaboa.usuario.domain.entity)</h1>
+<h1>Coverage Summary for Class: PromocaoController (com.eti.qualaboa.promocao.controller)</h1>
 
 <table class="coverageStats">
-
 <tr>
   <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
 <th class="coverageStat 
 ">
   Method, %
@@ -38,7 +41,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 </th>
 </tr>
 <tr>
-  <td class="name">Role</td>
+  <td class="name">PromocaoController</td>
 <td class="coverageStat">
   <span class="percent">
     100%
@@ -52,54 +55,19 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (1/1)
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
   </span>
 </td>
 </tr>
-  <tr>
-    <td class="name">Role$HibernateInstantiator</td>
-  </tr>
-  <tr>
-    <td class="name">Role$HibernateProxy</td>
-  </tr>
-  <tr>
-    <td class="name">Role$Values</td>
-<td class="coverageStat">
-  <span class="percent">
-    0%
-  </span>
-  <span class="absValue">
-    (0/3)
-  </span>
-</td>
-<td class="coverageStat">
-  <span class="percent">
-    0%
-  </span>
-  <span class="absValue">
-    (0/6)
-  </span>
-</td>
-  </tr>
-<tr>
-  <td class="name"><strong>Total</strong></td>
-<td class="coverageStat">
-  <span class="percent">
-    25%
-  </span>
-  <span class="absValue">
-    (1/4)
-  </span>
-</td>
-<td class="coverageStat">
-  <span class="percent">
-    14,3%
-  </span>
-  <span class="absValue">
-    (1/7)
-  </span>
-</td>
-</tr>
+
 </table>
 
 <br/>
@@ -107,38 +75,47 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.usuario.domain.entity;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.promocao.controller;
 &nbsp;
-&nbsp;import jakarta.persistence.Column;
-&nbsp;import jakarta.persistence.Entity;
-&nbsp;import jakarta.persistence.GeneratedValue;
-&nbsp;import jakarta.persistence.GenerationType;
-&nbsp;import jakarta.persistence.Id;
-&nbsp;import jakarta.persistence.Table;
-&nbsp;import lombok.Getter;
-&nbsp;import lombok.Setter;
+&nbsp;import com.eti.qualaboa.promocao.dto.PromocaoDTO;
+&nbsp;import com.eti.qualaboa.promocao.service.PromocaoService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
 &nbsp;
-&nbsp;@Entity
-&nbsp;@Table(name = &quot;tb_role&quot;)
-&nbsp;@Getter
-&nbsp;@Setter
-<b class="fc">&nbsp;public class Role {</b>
-&nbsp;    @Id
-&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
-&nbsp;    @Column(name = &quot;role_id&quot;)
-&nbsp;    private Long id;
-&nbsp;    private String nome;
+&nbsp;import java.util.List;
 &nbsp;
-<b class="nc">&nbsp;    public enum Values {</b>
-<b class="nc">&nbsp;        USER(1L),</b>
-<b class="nc">&nbsp;        ADMIN(2L),</b>
-<b class="nc">&nbsp;        ESTABELECIMENTO(3L);</b>
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/promocoes&quot;)
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class PromocaoController {
 &nbsp;
-&nbsp;        long roleId;
+&nbsp;    private final PromocaoService promocaoService;
 &nbsp;
-<b class="nc">&nbsp;        Values(long roleId) {</b>
-<b class="nc">&nbsp;            this.roleId = roleId;</b>
-&nbsp;        }
+&nbsp;    @GetMapping
+&nbsp;    public List&lt;PromocaoDTO&gt; listarTodas() {
+<b class="fc">&nbsp;        return promocaoService.listarTodas();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;PromocaoDTO&gt; buscarPorId(@PathVariable Long id) {
+<b class="fc">&nbsp;        return ResponseEntity.ok(promocaoService.buscarPorId(id));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;    public ResponseEntity&lt;PromocaoDTO&gt; criar(@RequestBody PromocaoDTO dto) {
+<b class="fc">&nbsp;        return ResponseEntity.ok(promocaoService.criarPromocao(dto));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;PromocaoDTO&gt; atualizar(@PathVariable Long id, @RequestBody PromocaoDTO dto) {
+<b class="fc">&nbsp;        return ResponseEntity.ok(promocaoService.atualizarPromocao(id, dto));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; deletar(@PathVariable Long id) {
+<b class="fc">&nbsp;        promocaoService.deletarPromocao(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.noContent().build();</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -164,7 +141,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

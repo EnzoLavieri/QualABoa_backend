@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > UsuarioRepository</title>
+  <title>Coverage Report > LogFavoritosRepository</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,28 +19,19 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.usuario.repository</a>
+    <a href="../index.html">com.eti.qualaboa.metricas.repository</a>
 </div>
 
-<h1>Coverage Summary for Class: UsuarioRepository (com.eti.qualaboa.usuario.repository)</h1>
+<h1>Coverage Summary for Class: LogFavoritosRepository (com.eti.qualaboa.metricas.repository)</h1>
 
 <table class="coverageStats">
-
 <tr>
   <th class="name">Class</th>
 </tr>
-  <tr>
-    <td class="name">UsuarioRepository$MockitoMock$SaDnwgIG</td>
-  </tr>
-  <tr>
-    <td class="name">UsuarioRepository$MockitoMock$SaDnwgIG$auxiliary$VD9ipi20</td>
-  </tr>
-  <tr>
-    <td class="name">UsuarioRepository$MockitoMock$SaDnwgIG$auxiliary$ymCExFJj</td>
-  </tr>
 <tr>
-  <td class="name"><strong>Total</strong></td>
+  <td class="name">LogFavoritosRepository</td>
 </tr>
+
 </table>
 
 <br/>
@@ -48,20 +39,27 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.usuario.repository;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.metricas.repository;
 &nbsp;
-&nbsp;import com.eti.qualaboa.usuario.domain.entity.Usuario;
+&nbsp;import com.eti.qualaboa.metricas.dto.CliquesPorDiaDTO;
+&nbsp;import com.eti.qualaboa.metricas.model.LogFavoritos;
 &nbsp;import org.springframework.data.jpa.repository.JpaRepository;
 &nbsp;import org.springframework.data.jpa.repository.Query;
 &nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Repository;
 &nbsp;
-&nbsp;import java.util.Optional;
+&nbsp;import java.util.List;
 &nbsp;
-&nbsp;public interface UsuarioRepository extends JpaRepository&lt;Usuario,Long&gt; {
-&nbsp;    Optional&lt;Usuario&gt; findByEmail(String email);
+&nbsp;@Repository
+&nbsp;public interface LogFavoritosRepository extends JpaRepository&lt;LogFavoritos, Long&gt; {
 &nbsp;
-&nbsp;    @Query(&quot;SELECT u FROM Usuario u LEFT JOIN FETCH u.favoritos WHERE u.id = :id&quot;)
-&nbsp;    Optional&lt;Usuario&gt; findUserFaviritosById(@Param(&quot;id&quot;) Long id);
+&nbsp;    @Query(&quot;SELECT new com.eti.qualaboa.metricas.dto.CliquesPorDiaDTO(CAST(l.dataHoraFavorito AS date), COUNT(l)) &quot; +
+&nbsp;            &quot;FROM LogFavoritos l &quot; +
+&nbsp;            &quot;WHERE l.estabelecimento.idEstabelecimento = :idEstabelecimento &quot; +
+&nbsp;            &quot;GROUP BY CAST(l.dataHoraFavorito AS date) &quot; +
+&nbsp;            &quot;ORDER BY CAST(l.dataHoraFavorito AS date) DESC&quot;)
+&nbsp;    List&lt;CliquesPorDiaDTO&gt; findFavoritosAgrupadosPorDia(@Param(&quot;idEstabelecimento&quot;) Long idEstabelecimento);
+&nbsp;
 &nbsp;}
 </code>
 </pre>
@@ -86,7 +84,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

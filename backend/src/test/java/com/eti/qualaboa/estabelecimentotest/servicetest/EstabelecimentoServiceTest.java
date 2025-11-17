@@ -36,7 +36,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class EstabelecimentoServiceTest {
 
-    // Mocks para todas as 5 dependências
     @Mock
     private EstabelecimentoRepository repositoryEstabelecimento;
     @Mock
@@ -50,18 +49,15 @@ public class EstabelecimentoServiceTest {
     @Mock
     private MetricasService metricasService;
 
-    // Injeta os mocks acima no serviço
     @InjectMocks
     private EstabelecimentoService estabelecimentoService;
 
-    // Dados de teste reutilizáveis
     private EstabelecimentoRegisterDTO registerDTO;
     private Role mockRole;
     private Estabelecimento mockEstabelecimento;
 
     @BeforeEach
     void setUp() {
-        // DTO para registrar um novo estabelecimento
         registerDTO = new EstabelecimentoRegisterDTO();
         registerDTO.setNome("Bar Novo Teste");
         registerDTO.setEmail("novo@teste.com");
@@ -70,12 +66,10 @@ public class EstabelecimentoServiceTest {
         registerDTO.setLatitude(-23.0);
         registerDTO.setLongitude(-51.0);
 
-        // Mock da Role
         mockRole = new Role();
         mockRole.setId(3L);
         mockRole.setNome("ESTABELECIMENTO");
 
-        // Mock da Entidade Estabelecimento
         mockEstabelecimento = Estabelecimento.builder()
                 .idEstabelecimento(1L)
                 .nome("Bar Já Salvo")
@@ -87,69 +81,56 @@ public class EstabelecimentoServiceTest {
     @Test
     @DisplayName("Deve criar um estabelecimento com sucesso")
     void criar_ComSucesso() {
-        // --- ARRANGE ---
 
-        // 1. Simula que o email NÃO existe
         when(repositoryEstabelecimento.existsByEmail("novo@teste.com")).thenReturn(false);
 
-        // 2. Simula o encoder de senha
         when(passwordEncoder.encode("senha123")).thenReturn("senhaCriptografada");
 
-        // 3. Simula a busca pela Role
         when(roleRepository.findByNome("ESTABELECIMENTO")).thenReturn(Optional.of(mockRole));
 
-        // 4. Simula o 'save' do repositório (usando thenAnswer para setar o ID)
         when(repositoryEstabelecimento.save(any(Estabelecimento.class))).thenAnswer(invocation -> {
             Estabelecimento estSalvo = invocation.getArgument(0);
-            estSalvo.setIdEstabelecimento(1L); // Simula o DB gerando o ID
+            estSalvo.setIdEstabelecimento(1L);
             return estSalvo;
         });
 
-        // 5. Simula as chamadas JDBC (não precisam fazer nada)
         doNothing().when(jdbcTemplate).execute(anyString());
         when(jdbcTemplate.update(anyString(), anyDouble(), anyDouble(), anyLong())).thenReturn(1);
 
-        // --- ACT ---
         EstabelecimentoResponseDTO response = estabelecimentoService.criar(registerDTO);
 
-        // --- ASSERT ---
         assertThat(response).isNotNull();
         assertThat(response.getIdEstabelecimento()).isEqualTo(1L);
         assertThat(response.getNome()).isEqualTo("Bar Novo Teste");
         assertThat(response.getEmail()).isEqualTo("novo@teste.com");
 
-        // Verifica se os mocks corretos foram chamados
         verify(passwordEncoder, times(1)).encode("senha123");
         verify(roleRepository, times(1)).findByNome("ESTABELECIMENTO");
         verify(repositoryEstabelecimento, times(1)).save(any(Estabelecimento.class));
-        verify(jdbcTemplate, times(1)).execute(anyString()); // Verifica se tentou criar/alterar a col geom
-        verify(jdbcTemplate, times(1)).update(anyString(), eq(-51.0), eq(-23.0), eq(1L)); // Verifica se atualizou o geom
+        verify(jdbcTemplate, times(1)).execute(anyString());
+        verify(jdbcTemplate, times(1)).update(anyString(), eq(-51.0), eq(-23.0), eq(1L));
     }
 
     @Test
     @DisplayName("Deve falhar ao criar se o email já existir")
     void criar_Falha_EmailJaExiste() {
-        // --- ARRANGE ---
         when(repositoryEstabelecimento.existsByEmail("novo@teste.com")).thenReturn(true);
 
-        // --- ACT & ASSERT ---
         assertThatThrownBy(() -> estabelecimentoService.criar(registerDTO))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("E-mail já cadastrado");
 
-        // Garante que nada foi salvo
         verify(repositoryEstabelecimento, never()).save(any());
     }
 
     @Test
     @DisplayName("Deve falhar ao criar se a Role 'ESTABELECIMENTO' não for encontrada")
     void criar_Falha_RoleNaoEncontrada() {
-        // --- ARRANGE ---
         when(repositoryEstabelecimento.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("hash");
         when(roleRepository.findByNome("ESTABELECIMENTO")).thenReturn(Optional.empty());
 
-        // --- ACT & ASSERT ---
+
         assertThatThrownBy(() -> estabelecimentoService.criar(registerDTO))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Role ESTABELECIMENTO não encontrada");
@@ -182,14 +163,11 @@ public class EstabelecimentoServiceTest {
     @Test
     @DisplayName("Deve vincular um Estabelecimento a um PlaceId do Google")
     void vincularComPlace_Sucesso() {
-        // --- ARRANGE ---
         String placeId = "place_teste_123";
         Estabelecimento estSemPlace = Estabelecimento.builder().idEstabelecimento(1L).nome("Bar Antigo").build();
 
-        // 1. Mock do findById
         when(repositoryEstabelecimento.findById(1L)).thenReturn(Optional.of(estSemPlace));
 
-        // 2. Mock da resposta do PlacesClient
         Map<String, Object> mockLocation = Map.of("lat", -23.1, "lng", -51.1);
         Map<String, Object> mockGeometry = Map.of("location", mockLocation);
         Map<String, Object> mockResult = Map.of(
@@ -200,13 +178,10 @@ public class EstabelecimentoServiceTest {
         Map<String, Object> mockDetails = Map.of("result", mockResult);
         when(placesClient.placeDetails(placeId)).thenReturn(mockDetails);
 
-        // 3. Mock do save
         when(repositoryEstabelecimento.save(any(Estabelecimento.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        // --- ACT ---
         EstabelecimentoDTO dtoResultado = estabelecimentoService.vincularComPlace(1L, placeId);
 
-        // --- ASSERT ---
         assertThat(dtoResultado).isNotNull();
         assertThat(dtoResultado.getNome()).isEqualTo("Bar do Google");
         assertThat(dtoResultado.getPlaceId()).isEqualTo(placeId);
@@ -221,23 +196,19 @@ public class EstabelecimentoServiceTest {
     @Test
     @DisplayName("Deve listar cupons de um estabelecimento")
     void listarCuponsPorEstabelecimento_Sucesso() {
-        // --- ARRANGE ---
         Cupom cupom1 = Cupom.builder().idCupom(10L).codigo("CUPOM10").build();
         Cupom cupom2 = Cupom.builder().idCupom(20L).codigo("CUPOM20").build();
 
-        // Seta a lista de cupons no estabelecimento mockado
         mockEstabelecimento.setCupons(List.of(cupom1, cupom2));
 
         when(repositoryEstabelecimento.findById(1L)).thenReturn(Optional.of(mockEstabelecimento));
 
-        // --- ACT ---
         List<com.eti.qualaboa.cupom.dto.CupomDTO> cupons = estabelecimentoService.listarCuponsPorEstabelecimento(1L);
 
-        // --- ASSERT ---
         assertThat(cupons)
                 .isNotNull()
                 .hasSize(2);
         assertThat(cupons.get(0).getCodigo()).isEqualTo("CUPOM10");
-        assertThat(cupons.get(1).getIdEstabelecimento()).isEqualTo(1L); // Verifica se o ID do Est. foi setado no DTO
+        assertThat(cupons.get(1).getIdEstabelecimento()).isEqualTo(1L);
     }
 }

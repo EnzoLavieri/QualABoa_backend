@@ -44,26 +44,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">EventoController</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/5)
+    (5/5)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/6)
+    (6/6)
   </span>
 </td>
 </tr>
@@ -94,28 +94,28 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    @GetMapping
 &nbsp;    public ResponseEntity&lt;List&lt;EventoDTO&gt;&gt; listar() {
-<b class="nc">&nbsp;        return ResponseEntity.ok(eventoService.listarTodos());</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(eventoService.listarTodos());</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @GetMapping(&quot;/{id}&quot;)
 &nbsp;    public ResponseEntity&lt;EventoDTO&gt; buscar(@PathVariable Long id) {
-<b class="nc">&nbsp;        return ResponseEntity.ok(eventoService.buscarPorId(id));</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(eventoService.buscarPorId(id));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @PostMapping
 &nbsp;    public ResponseEntity&lt;EventoDTO&gt; criar(@RequestBody EventoDTO dto) {
-<b class="nc">&nbsp;        return ResponseEntity.ok(eventoService.criarEvento(dto));</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(eventoService.criarEvento(dto));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @PutMapping(&quot;/{id}&quot;)
 &nbsp;    public ResponseEntity&lt;EventoDTO&gt; atualizar(@PathVariable Long id, @RequestBody EventoDTO dto) {
-<b class="nc">&nbsp;        return ResponseEntity.ok(eventoService.atualizarEvento(id, dto));</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok(eventoService.atualizarEvento(id, dto));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @DeleteMapping(&quot;/{id}&quot;)
 &nbsp;    public ResponseEntity&lt;Void&gt; deletar(@PathVariable Long id) {
-<b class="nc">&nbsp;        eventoService.deletarEvento(id);</b>
-<b class="nc">&nbsp;        return ResponseEntity.noContent().build();</b>
+<b class="fc">&nbsp;        eventoService.deletarEvento(id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.noContent().build();</b>
 &nbsp;    }
 &nbsp;}
 &nbsp;
@@ -142,7 +142,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

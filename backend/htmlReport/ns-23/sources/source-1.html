@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > Promocao</title>
+  <title>Coverage Report > CupomRepository</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,10 +19,10 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.promocao.model</a>
+    <a href="../index.html">com.eti.qualaboa.cupom.repository</a>
 </div>
 
-<h1>Coverage Summary for Class: Promocao (com.eti.qualaboa.promocao.model)</h1>
+<h1>Coverage Summary for Class: CupomRepository (com.eti.qualaboa.cupom.repository)</h1>
 
 <table class="coverageStats">
 
@@ -30,10 +30,13 @@ Current scope:     <a href="../../index.html">all classes</a>
   <th class="name">Class</th>
 </tr>
   <tr>
-    <td class="name">Promocao$HibernateInstantiator</td>
+    <td class="name">CupomRepository$MockitoMock$CIrIPtcj</td>
   </tr>
   <tr>
-    <td class="name">Promocao$HibernateProxy</td>
+    <td class="name">CupomRepository$MockitoMock$CIrIPtcj$auxiliary$1TwnytX2</td>
+  </tr>
+  <tr>
+    <td class="name">CupomRepository$MockitoMock$CIrIPtcj$auxiliary$RPZYi3OC</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
@@ -45,38 +48,18 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.promocao.model;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.cupom.repository;
 &nbsp;
 &nbsp;import com.eti.qualaboa.cupom.model.Cupom;
 &nbsp;import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
-&nbsp;import jakarta.persistence.*;
-&nbsp;import lombok.*;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
 &nbsp;
-&nbsp;@Entity
-&nbsp;@Table(name = &quot;promocoes&quot;)
-&nbsp;@Data
-&nbsp;@NoArgsConstructor
-&nbsp;@AllArgsConstructor
-&nbsp;@Builder
-&nbsp;public class Promocao {
+&nbsp;public interface CupomRepository extends JpaRepository&lt;Cupom, Long&gt; {
+&nbsp;    List&lt;Cupom&gt; findByEstabelecimentoIdEstabelecimento(Long idEstabelecimento);
 &nbsp;
-&nbsp;    @Id
-&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
-&nbsp;    private Long idPromocao;
-&nbsp;
-&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
-&nbsp;    @JoinColumn(name = &quot;idEstabelecimento&quot;, nullable = false)
-&nbsp;    private Estabelecimento estabelecimento;
-&nbsp;
-&nbsp;    @ManyToOne(fetch = FetchType.LAZY)
-&nbsp;    @JoinColumn(name = &quot;idCupom&quot;)
-&nbsp;    private Cupom cupom;
-&nbsp;
-&nbsp;    private String descricao;
-&nbsp;    private double desconto; //por exemplo: 10% de desconto em drinks
-&nbsp;    private int totalVisualizacoes;
-&nbsp;    private int totalCliques;
-&nbsp;    private boolean ativa = true;
+&nbsp;    Optional&lt;Cupom&gt; findByCodigo(String codigo);
 &nbsp;}
 &nbsp;
 </code>
@@ -102,7 +85,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

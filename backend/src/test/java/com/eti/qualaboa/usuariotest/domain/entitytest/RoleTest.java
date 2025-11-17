@@ -24,9 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 @ContextConfiguration(initializers = RoleTest.Initializer.class)
-// A linha @EntityScan foi REMOVIDA daqui.
-// Isso permite que o @DataJpaTest encontre TODAS as suas entidades
-// (Usuario, Estabelecimento, Role, etc.) e construa o modelo JPA corretamente.
+
 public class RoleTest {
 
     @Container
@@ -54,8 +52,7 @@ public class RoleTest {
                     "spring.datasource.password=" + postgresContainer.getPassword(),
                     "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect",
                     "spring.jpa.hibernate.ddl-auto=create-drop",
-                    // [CORREÇÃO] Adicione esta linha:
-                    "spring.sql.init.mode=never" // Impede que o data.sql rode neste teste
+                    "spring.sql.init.mode=never"
             );
         }
     }

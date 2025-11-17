@@ -48,34 +48,34 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">EventoService</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/6)
+    (6/6)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/4)
+    (4/4)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/42)
+    (42/42)
   </span>
 </td>
 </tr>
@@ -111,69 +111,69 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    private final CupomRepository cupomRepository;
 &nbsp;
 &nbsp;    public List&lt;EventoDTO&gt; listarTodos() {
-<b class="nc">&nbsp;        return eventoRepository.findAll()</b>
-<b class="nc">&nbsp;                .stream().map(this::toDTO).collect(Collectors.toList());</b>
+<b class="fc">&nbsp;        return eventoRepository.findAll()</b>
+<b class="fc">&nbsp;                .stream().map(this::toDTO).collect(Collectors.toList());</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public EventoDTO buscarPorId(Long id) {
-<b class="nc">&nbsp;        return eventoRepository.findById(id).map(this::toDTO)</b>
-<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Evento não encontrado&quot;));</b>
+<b class="fc">&nbsp;        return eventoRepository.findById(id).map(this::toDTO)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Evento não encontrado&quot;));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public EventoDTO criarEvento(EventoDTO dto) {
-<b class="nc">&nbsp;        Estabelecimento est = estabelecimentoRepository.findById(dto.getIdEstabelecimento())</b>
-<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Estabelecimento não encontrado&quot;));</b>
+<b class="fc">&nbsp;        Estabelecimento est = estabelecimentoRepository.findById(dto.getIdEstabelecimento())</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Estabelecimento não encontrado&quot;));</b>
 &nbsp;
-<b class="nc">&nbsp;        Cupom cupom = null;</b>
-<b class="nc">&nbsp;        if (dto.getIdCupom() != null) {</b>
-<b class="nc">&nbsp;            cupom = cupomRepository.findById(dto.getIdCupom())</b>
-<b class="nc">&nbsp;                    .orElseThrow(() -&gt; new RuntimeException(&quot;Cupom não encontrado&quot;));</b>
+<b class="fc">&nbsp;        Cupom cupom = null;</b>
+<b class="fc">&nbsp;        if (dto.getIdCupom() != null) {</b>
+<b class="fc">&nbsp;            cupom = cupomRepository.findById(dto.getIdCupom())</b>
+<b class="fc">&nbsp;                    .orElseThrow(() -&gt; new RuntimeException(&quot;Cupom não encontrado&quot;));</b>
 &nbsp;        }
 &nbsp;
-<b class="nc">&nbsp;        Evento evento = Evento.builder()</b>
-<b class="nc">&nbsp;                .descricao(dto.getDescricao())</b>
-<b class="nc">&nbsp;                .titulo(dto.getTitulo())</b>
-<b class="nc">&nbsp;                .data(dto.getData())</b>
-<b class="nc">&nbsp;                .horario(dto.getHorario())</b>
-<b class="nc">&nbsp;                .totalVisualizacoes(0)</b>
-<b class="nc">&nbsp;                .totalCliques(0)</b>
-<b class="nc">&nbsp;                .estabelecimento(est)</b>
-<b class="nc">&nbsp;                .cupom(cupom)</b>
-<b class="nc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        Evento evento = Evento.builder()</b>
+<b class="fc">&nbsp;                .descricao(dto.getDescricao())</b>
+<b class="fc">&nbsp;                .titulo(dto.getTitulo())</b>
+<b class="fc">&nbsp;                .data(dto.getData())</b>
+<b class="fc">&nbsp;                .horario(dto.getHorario())</b>
+<b class="fc">&nbsp;                .totalVisualizacoes(0)</b>
+<b class="fc">&nbsp;                .totalCliques(0)</b>
+<b class="fc">&nbsp;                .estabelecimento(est)</b>
+<b class="fc">&nbsp;                .cupom(cupom)</b>
+<b class="fc">&nbsp;                .build();</b>
 &nbsp;
-<b class="nc">&nbsp;        return toDTO(eventoRepository.save(evento));</b>
+<b class="fc">&nbsp;        return toDTO(eventoRepository.save(evento));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public EventoDTO atualizarEvento(Long id, EventoDTO dto) {
-<b class="nc">&nbsp;        Evento evento = eventoRepository.findById(id)</b>
-<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Evento não encontrado&quot;));</b>
+<b class="fc">&nbsp;        Evento evento = eventoRepository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Evento não encontrado&quot;));</b>
 &nbsp;
-<b class="nc">&nbsp;        evento.setDescricao(dto.getDescricao());</b>
-<b class="nc">&nbsp;        evento.setTitulo(dto.getTitulo());</b>
-<b class="nc">&nbsp;        evento.setData(dto.getData());</b>
-<b class="nc">&nbsp;        evento.setHorario(dto.getHorario());</b>
-<b class="nc">&nbsp;        evento.setTotalVisualizacoes(dto.getTotalVisualizacoes());</b>
-<b class="nc">&nbsp;        evento.setTotalCliques(dto.getTotalCliques());</b>
+<b class="fc">&nbsp;        evento.setDescricao(dto.getDescricao());</b>
+<b class="fc">&nbsp;        evento.setTitulo(dto.getTitulo());</b>
+<b class="fc">&nbsp;        evento.setData(dto.getData());</b>
+<b class="fc">&nbsp;        evento.setHorario(dto.getHorario());</b>
+<b class="fc">&nbsp;        evento.setTotalVisualizacoes(dto.getTotalVisualizacoes());</b>
+<b class="fc">&nbsp;        evento.setTotalCliques(dto.getTotalCliques());</b>
 &nbsp;
-<b class="nc">&nbsp;        return toDTO(eventoRepository.save(evento));</b>
+<b class="fc">&nbsp;        return toDTO(eventoRepository.save(evento));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void deletarEvento(Long id) {
-<b class="nc">&nbsp;        eventoRepository.deleteById(id);</b>
+<b class="fc">&nbsp;        eventoRepository.deleteById(id);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    private EventoDTO toDTO(Evento e) {
-<b class="nc">&nbsp;        return EventoDTO.builder()</b>
-<b class="nc">&nbsp;                .idEvento(e.getIdEvento())</b>
-<b class="nc">&nbsp;                .idEstabelecimento(e.getEstabelecimento().getIdEstabelecimento())</b>
-<b class="nc">&nbsp;                .idCupom(e.getCupom() != null ? e.getCupom().getIdCupom() : null)</b>
-<b class="nc">&nbsp;                .descricao(e.getDescricao())</b>
-<b class="nc">&nbsp;                .titulo(e.getTitulo())</b>
-<b class="nc">&nbsp;                .data(e.getData())</b>
-<b class="nc">&nbsp;                .horario(e.getHorario())</b>
-<b class="nc">&nbsp;                .totalVisualizacoes(e.getTotalVisualizacoes())</b>
-<b class="nc">&nbsp;                .totalCliques(e.getTotalCliques())</b>
-<b class="nc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        return EventoDTO.builder()</b>
+<b class="fc">&nbsp;                .idEvento(e.getIdEvento())</b>
+<b class="fc">&nbsp;                .idEstabelecimento(e.getEstabelecimento().getIdEstabelecimento())</b>
+<b class="fc">&nbsp;                .idCupom(e.getCupom() != null ? e.getCupom().getIdCupom() : null)</b>
+<b class="fc">&nbsp;                .descricao(e.getDescricao())</b>
+<b class="fc">&nbsp;                .titulo(e.getTitulo())</b>
+<b class="fc">&nbsp;                .data(e.getData())</b>
+<b class="fc">&nbsp;                .horario(e.getHorario())</b>
+<b class="fc">&nbsp;                .totalVisualizacoes(e.getTotalVisualizacoes())</b>
+<b class="fc">&nbsp;                .totalCliques(e.getTotalCliques())</b>
+<b class="fc">&nbsp;                .build();</b>
 &nbsp;    }
 &nbsp;}
 &nbsp;
@@ -200,7 +200,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

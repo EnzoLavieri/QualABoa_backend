@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > Endereco</title>
+  <title>Coverage Report > Role</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -19,24 +19,86 @@
 <div class="breadCrumbs">
 Current scope:     <a href="../../index.html">all classes</a>
     <span class="separator">|</span>
-    <a href="../index.html">com.eti.qualaboa.endereco</a>
+    <a href="../index.html">com.eti.qualaboa.usuario.domain.entity</a>
 </div>
 
-<h1>Coverage Summary for Class: Endereco (com.eti.qualaboa.endereco)</h1>
+<h1>Coverage Summary for Class: Role (com.eti.qualaboa.usuario.domain.entity)</h1>
 
 <table class="coverageStats">
 
 <tr>
   <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Role</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
 </tr>
   <tr>
-    <td class="name">Endereco$HibernateInstantiator</td>
+    <td class="name">Role$HibernateInstantiator</td>
   </tr>
   <tr>
-    <td class="name">Endereco$HibernateProxy</td>
+    <td class="name">Role$HibernateProxy</td>
+  </tr>
+  <tr>
+    <td class="name">Role$Values</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    14,3%
+  </span>
+  <span class="absValue">
+    (1/7)
+  </span>
+</td>
 </tr>
 </table>
 
@@ -45,34 +107,39 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.endereco;
+<code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.usuario.domain.entity;
 &nbsp;
-&nbsp;import jakarta.persistence.*;
-&nbsp;import lombok.*;
+&nbsp;import jakarta.persistence.Column;
+&nbsp;import jakarta.persistence.Entity;
+&nbsp;import jakarta.persistence.GeneratedValue;
+&nbsp;import jakarta.persistence.GenerationType;
+&nbsp;import jakarta.persistence.Id;
+&nbsp;import jakarta.persistence.Table;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.Setter;
 &nbsp;
 &nbsp;@Entity
-&nbsp;@Table(name = &quot;enderecos&quot;)
-&nbsp;@Data
-&nbsp;@NoArgsConstructor
-&nbsp;@AllArgsConstructor
-&nbsp;@Builder
-&nbsp;@EqualsAndHashCode(of = &quot;idEndereco&quot;)
-&nbsp;@ToString(exclude = {&quot;estabelecimento&quot;})
-&nbsp;public class Endereco {
-&nbsp;
+&nbsp;@Table(name = &quot;tb_role&quot;)
+&nbsp;@Getter
+&nbsp;@Setter
+<b class="fc">&nbsp;public class Role {</b>
 &nbsp;    @Id
 &nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
-&nbsp;    private Long idEndereco;
+&nbsp;    @Column(name = &quot;role_id&quot;)
+&nbsp;    private Long id;
+&nbsp;    private String nome;
 &nbsp;
-&nbsp;    private String rua;
-&nbsp;    private String numero;
-&nbsp;    private String bairro;
-&nbsp;    private String cidade;
-&nbsp;    private String estado;
-&nbsp;    private String cep;
+<b class="nc">&nbsp;    public enum Values {</b>
+<b class="nc">&nbsp;        USER(1L),</b>
+<b class="nc">&nbsp;        ADMIN(2L),</b>
+<b class="nc">&nbsp;        ESTABELECIMENTO(3L);</b>
 &nbsp;
-&nbsp;    private Double latitude;
-&nbsp;    private Double longitude;
+&nbsp;        long roleId;
+&nbsp;
+<b class="nc">&nbsp;        Values(long roleId) {</b>
+<b class="nc">&nbsp;            this.roleId = roleId;</b>
+&nbsp;        }
+&nbsp;    }
 &nbsp;}
 </code>
 </pre>
@@ -97,7 +164,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

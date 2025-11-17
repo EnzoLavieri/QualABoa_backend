@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > EstabelecimentoRegisterDTO</title>
+  <title>Coverage Report > EstabelecimentoDTO</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">com.eti.qualaboa.estabelecimento.dto</a>
 </div>
 
-<h1>Coverage Summary for Class: EstabelecimentoRegisterDTO (com.eti.qualaboa.estabelecimento.dto)</h1>
+<h1>Coverage Summary for Class: EstabelecimentoDTO (com.eti.qualaboa.estabelecimento.dto)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">EstabelecimentoRegisterDTO</td>
+  <td class="name">EstabelecimentoDTO</td>
 </tr>
 
 </table>
@@ -42,34 +42,29 @@ Current scope:     <a href="../../index.html">all classes</a>
 <code class="sourceCode" id="sourceCode">&nbsp;package com.eti.qualaboa.estabelecimento.dto;
 &nbsp;
 &nbsp;import com.eti.qualaboa.endereco.Endereco;
-&nbsp;import jakarta.persistence.Column;
-&nbsp;import lombok.Data;
-&nbsp;import lombok.ToString;
-&nbsp;
+&nbsp;import lombok.*;
 &nbsp;import java.util.List;
 &nbsp;
 &nbsp;@Data
-&nbsp;@ToString
-&nbsp;public class EstabelecimentoRegisterDTO {
+&nbsp;@NoArgsConstructor
+&nbsp;@AllArgsConstructor
+&nbsp;@Builder
+&nbsp;public class EstabelecimentoDTO {
 &nbsp;    private Long idEstabelecimento;
 &nbsp;    private String nome;
 &nbsp;    private String email;
-&nbsp;    private String senha;
 &nbsp;    private String categoria;
 &nbsp;    private String descricao;
 &nbsp;    private String telefone;
+&nbsp;    private Endereco endereco;
+&nbsp;    private Double classificacao;
+&nbsp;    private List&lt;String&gt; conveniencias;
 &nbsp;    private Boolean parceiro;
 &nbsp;    private String placeId;
 &nbsp;    private Double latitude;
 &nbsp;    private Double longitude;
-&nbsp;
-&nbsp;    @Column(length = 1000)
 &nbsp;    private String enderecoFormatado;
-&nbsp;
-&nbsp;    private Endereco endereco;
-&nbsp;    private Double classificacao;
-&nbsp;    private List&lt;String&gt; conveniencias;
-&nbsp;    private Long idRole;
+&nbsp;    private String fotoUrl;
 &nbsp;}
 </code>
 </pre>
@@ -94,7 +89,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

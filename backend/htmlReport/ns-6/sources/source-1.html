@@ -44,26 +44,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">CupomService</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    77,8%
   </span>
   <span class="absValue">
-    (0/7)
+    (7/9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    89,8%
   </span>
   <span class="absValue">
-    (0/44)
+    (44/49)
   </span>
 </td>
 </tr>
@@ -97,74 +97,85 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    private final EstabelecimentoRepository estabelecimentoRepository;
 &nbsp;
 &nbsp;    public List&lt;CupomDTO&gt; listarTodos() {
-<b class="nc">&nbsp;        return cupomRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());</b>
+<b class="fc">&nbsp;        return cupomRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public CupomDTO buscarPorId(Long id) {
-<b class="nc">&nbsp;        return cupomRepository.findById(id).map(this::toDTO)</b>
-<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Cupom não encontrado&quot;));</b>
+<b class="fc">&nbsp;        return cupomRepository.findById(id).map(this::toDTO)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Cupom não encontrado&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;CupomDTO&gt; buscarCuponsPorEstabelecimento(Long idEstabelecimento) {
+<b class="nc">&nbsp;        List&lt;Cupom&gt; cupons = cupomRepository.findByEstabelecimentoIdEstabelecimento(idEstabelecimento);</b>
+<b class="nc">&nbsp;        return cupons.stream().map(this::toDTO).collect(Collectors.toList());</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public CupomDTO criarCupom(CupomDTO dto) {
-<b class="nc">&nbsp;        Estabelecimento estabelecimento = estabelecimentoRepository.findById(dto.getIdEstabelecimento())</b>
-<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Estabelecimento não encontrado&quot;));</b>
+<b class="fc">&nbsp;        Estabelecimento estabelecimento = estabelecimentoRepository.findById(dto.getIdEstabelecimento())</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Estabelecimento não encontrado&quot;));</b>
 &nbsp;
-<b class="nc">&nbsp;        Cupom cupom = Cupom.builder()</b>
-<b class="nc">&nbsp;                .codigo(gerarCodigoCupom())</b>
-<b class="nc">&nbsp;                .descricao(dto.getDescricao())</b>
-<b class="nc">&nbsp;                .tipo(dto.getTipo())</b>
-<b class="nc">&nbsp;                .valor(dto.getValor())</b>
-<b class="nc">&nbsp;                .dataInicio(dto.getDataInicio())</b>
-<b class="nc">&nbsp;                .dataFim(dto.getDataFim())</b>
-<b class="nc">&nbsp;                .quantidadeTotal(dto.getQuantidadeTotal())</b>
-<b class="nc">&nbsp;                .quantidadeUsada(0)</b>
-<b class="nc">&nbsp;                .ativo(true)</b>
-<b class="nc">&nbsp;                .estabelecimento(estabelecimento)</b>
-<b class="nc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        Cupom cupom = Cupom.builder()</b>
+<b class="fc">&nbsp;                .codigo(gerarCodigoCupom())</b>
+<b class="fc">&nbsp;                .descricao(dto.getDescricao())</b>
+<b class="fc">&nbsp;                .tipo(dto.getTipo())</b>
+<b class="fc">&nbsp;                .valor(dto.getValor())</b>
+<b class="fc">&nbsp;                .dataInicio(dto.getDataInicio())</b>
+<b class="fc">&nbsp;                .dataFim(dto.getDataFim())</b>
+<b class="fc">&nbsp;                .quantidadeTotal(dto.getQuantidadeTotal())</b>
+<b class="fc">&nbsp;                .quantidadeUsada(0)</b>
+<b class="fc">&nbsp;                .ativo(true)</b>
+<b class="fc">&nbsp;                .estabelecimento(estabelecimento)</b>
+<b class="fc">&nbsp;                .build();</b>
 &nbsp;
-<b class="nc">&nbsp;        return toDTO(cupomRepository.save(cupom));</b>
+<b class="fc">&nbsp;        return toDTO(cupomRepository.save(cupom));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public CupomDTO atualizarCupom(Long id, CupomDTO dto) {
-<b class="nc">&nbsp;        Cupom cupom = cupomRepository.findById(id)</b>
-<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Cupom não encontrado&quot;));</b>
+<b class="fc">&nbsp;        Cupom cupom = cupomRepository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Cupom não encontrado&quot;));</b>
 &nbsp;
-<b class="nc">&nbsp;        cupom.setDescricao(dto.getDescricao());</b>
-<b class="nc">&nbsp;        cupom.setTipo(dto.getTipo());</b>
-<b class="nc">&nbsp;        cupom.setValor(dto.getValor());</b>
-<b class="nc">&nbsp;        cupom.setDataInicio(dto.getDataInicio());</b>
-<b class="nc">&nbsp;        cupom.setDataFim(dto.getDataFim());</b>
-<b class="nc">&nbsp;        cupom.setAtivo(dto.isAtivo());</b>
-<b class="nc">&nbsp;        cupom.setQuantidadeTotal(dto.getQuantidadeTotal());</b>
-<b class="nc">&nbsp;        cupom.setQuantidadeUsada(dto.getQuantidadeUsada());</b>
+<b class="fc">&nbsp;        cupom.setDescricao(dto.getDescricao());</b>
+<b class="fc">&nbsp;        cupom.setTipo(dto.getTipo());</b>
+<b class="fc">&nbsp;        cupom.setValor(dto.getValor());</b>
+<b class="fc">&nbsp;        cupom.setDataInicio(dto.getDataInicio());</b>
+<b class="fc">&nbsp;        cupom.setDataFim(dto.getDataFim());</b>
+<b class="fc">&nbsp;        cupom.setAtivo(dto.isAtivo());</b>
+<b class="fc">&nbsp;        cupom.setQuantidadeTotal(dto.getQuantidadeTotal());</b>
+<b class="fc">&nbsp;        cupom.setQuantidadeUsada(dto.getQuantidadeUsada());</b>
 &nbsp;
-<b class="nc">&nbsp;        return toDTO(cupomRepository.save(cupom));</b>
+<b class="fc">&nbsp;        return toDTO(cupomRepository.save(cupom));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void deletarCupom(Long id) {
-<b class="nc">&nbsp;        cupomRepository.deleteById(id);</b>
+<b class="fc">&nbsp;        cupomRepository.deleteById(id);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    //gera código aleatório
 &nbsp;    private String gerarCodigoCupom() {
-<b class="nc">&nbsp;        return &quot;QLB-&quot; + java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase();</b>
+<b class="fc">&nbsp;        return &quot;QLB-&quot; + java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void validarCupom(String codigo) {
+<b class="nc">&nbsp;        Cupom cupom = cupomRepository.findByCodigo(codigo).orElseThrow(() -&gt; new RuntimeException(&quot;Cupom não encontrado&quot;));</b>
+<b class="nc">&nbsp;        cupom.setQuantidadeUsada(cupom.getQuantidadeUsada() + 1);</b>
+<b class="nc">&nbsp;        cupomRepository.save(cupom);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;
 &nbsp;    private CupomDTO toDTO(Cupom c) {
-<b class="nc">&nbsp;        return CupomDTO.builder()</b>
-<b class="nc">&nbsp;                .idCupom(c.getIdCupom())</b>
-<b class="nc">&nbsp;                .codigo(c.getCodigo())</b>
-<b class="nc">&nbsp;                .descricao(c.getDescricao())</b>
-<b class="nc">&nbsp;                .tipo(c.getTipo())</b>
-<b class="nc">&nbsp;                .valor(c.getValor())</b>
-<b class="nc">&nbsp;                .dataInicio(c.getDataInicio())</b>
-<b class="nc">&nbsp;                .dataFim(c.getDataFim())</b>
-<b class="nc">&nbsp;                .ativo(c.isAtivo())</b>
-<b class="nc">&nbsp;                .quantidadeTotal(c.getQuantidadeTotal())</b>
-<b class="nc">&nbsp;                .quantidadeUsada(c.getQuantidadeUsada())</b>
-<b class="nc">&nbsp;                .idEstabelecimento(c.getEstabelecimento().getIdEstabelecimento())</b>
-<b class="nc">&nbsp;                .build();</b>
+<b class="fc">&nbsp;        return CupomDTO.builder()</b>
+<b class="fc">&nbsp;                .idCupom(c.getIdCupom())</b>
+<b class="fc">&nbsp;                .codigo(c.getCodigo())</b>
+<b class="fc">&nbsp;                .descricao(c.getDescricao())</b>
+<b class="fc">&nbsp;                .tipo(c.getTipo())</b>
+<b class="fc">&nbsp;                .valor(c.getValor())</b>
+<b class="fc">&nbsp;                .dataInicio(c.getDataInicio())</b>
+<b class="fc">&nbsp;                .dataFim(c.getDataFim())</b>
+<b class="fc">&nbsp;                .ativo(c.isAtivo())</b>
+<b class="fc">&nbsp;                .quantidadeTotal(c.getQuantidadeTotal())</b>
+<b class="fc">&nbsp;                .quantidadeUsada(c.getQuantidadeUsada())</b>
+<b class="fc">&nbsp;                .idEstabelecimento(c.getEstabelecimento().getIdEstabelecimento())</b>
+<b class="fc">&nbsp;                .build();</b>
 &nbsp;    }
 &nbsp;}
 &nbsp;
@@ -191,7 +202,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>

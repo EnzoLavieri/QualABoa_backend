@@ -44,26 +44,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">EstabelecimentoResponseDTO</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/2)
+    (2/2)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/25)
+    (27/27)
   </span>
 </td>
 </tr>
@@ -100,34 +100,41 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    private Endereco endereco;
 &nbsp;    private Double classificacao;
 &nbsp;    private List&lt;String&gt; conveniencias;
+&nbsp;    private String fotoUrl;
 &nbsp;
-<b class="nc">&nbsp;    public EstabelecimentoResponseDTO(Long id, String nome, String email, String categoria, String descricao, String telefone, Boolean parceiro, String placeId, Double latitude, Double longitude, String enderecoFormatado, Endereco endereco, Double classificacao, List&lt;String&gt; conveniencias) {</b>
-<b class="nc">&nbsp;        this.idEstabelecimento = id;</b>
-<b class="nc">&nbsp;        this.nome = nome;</b>
-<b class="nc">&nbsp;        this.email = email;</b>
-<b class="nc">&nbsp;        this.categoria = categoria;</b>
-<b class="nc">&nbsp;        this.descricao = descricao;</b>
-<b class="nc">&nbsp;        this.telefone = telefone;</b>
-<b class="nc">&nbsp;        this.endereco = endereco;</b>
-<b class="nc">&nbsp;        this.classificacao = classificacao;</b>
-<b class="nc">&nbsp;        this.conveniencias = conveniencias;</b>
+&nbsp;    public EstabelecimentoResponseDTO(Long id, String nome, String email, String categoria,
+&nbsp;                                      String descricao, String telefone, Boolean parceiro,
+&nbsp;                                      String placeId, Double latitude, Double longitude,
+&nbsp;                                      String enderecoFormatado, Endereco endereco, Double classificacao,
+<b class="fc">&nbsp;                                      List&lt;String&gt; conveniencias) {</b>
+<b class="fc">&nbsp;        this.idEstabelecimento = id;</b>
+<b class="fc">&nbsp;        this.nome = nome;</b>
+<b class="fc">&nbsp;        this.email = email;</b>
+<b class="fc">&nbsp;        this.categoria = categoria;</b>
+<b class="fc">&nbsp;        this.descricao = descricao;</b>
+<b class="fc">&nbsp;        this.telefone = telefone;</b>
+<b class="fc">&nbsp;        this.endereco = endereco;</b>
+<b class="fc">&nbsp;        this.classificacao = classificacao;</b>
+<b class="fc">&nbsp;        this.conveniencias = conveniencias;</b>
+<b class="fc">&nbsp;        this.fotoUrl = fotoUrl;</b>
 &nbsp;    }
 &nbsp;
-<b class="nc">&nbsp;    public EstabelecimentoResponseDTO(Estabelecimento estabelecimento) {</b>
-<b class="nc">&nbsp;        this.idEstabelecimento = estabelecimento.getIdEstabelecimento();</b>
-<b class="nc">&nbsp;        this.nome = estabelecimento.getNome();</b>
-<b class="nc">&nbsp;        this.email = estabelecimento.getEmail();</b>
-<b class="nc">&nbsp;        this.categoria = estabelecimento.getCategoria();</b>
-<b class="nc">&nbsp;        this.descricao = estabelecimento.getDescricao();</b>
-<b class="nc">&nbsp;        this.telefone = estabelecimento.getTelefone();</b>
-<b class="nc">&nbsp;        this.parceiro = estabelecimento.getParceiro();</b>
-<b class="nc">&nbsp;        this.placeId = estabelecimento.getPlaceId();</b>
-<b class="nc">&nbsp;        this.latitude = estabelecimento.getLatitude();</b>
-<b class="nc">&nbsp;        this.longitude = estabelecimento.getLongitude();</b>
-<b class="nc">&nbsp;        this.enderecoFormatado = estabelecimento.getEnderecoFormatado();</b>
-<b class="nc">&nbsp;        this.endereco = estabelecimento.getEndereco();</b>
-<b class="nc">&nbsp;        this.classificacao = estabelecimento.getClassificacao();</b>
-<b class="nc">&nbsp;        this.conveniencias = estabelecimento.getConveniencias();</b>
+<b class="fc">&nbsp;    public EstabelecimentoResponseDTO(Estabelecimento estabelecimento) {</b>
+<b class="fc">&nbsp;        this.idEstabelecimento = estabelecimento.getIdEstabelecimento();</b>
+<b class="fc">&nbsp;        this.nome = estabelecimento.getNome();</b>
+<b class="fc">&nbsp;        this.email = estabelecimento.getEmail();</b>
+<b class="fc">&nbsp;        this.categoria = estabelecimento.getCategoria();</b>
+<b class="fc">&nbsp;        this.descricao = estabelecimento.getDescricao();</b>
+<b class="fc">&nbsp;        this.telefone = estabelecimento.getTelefone();</b>
+<b class="fc">&nbsp;        this.parceiro = estabelecimento.getParceiro();</b>
+<b class="fc">&nbsp;        this.placeId = estabelecimento.getPlaceId();</b>
+<b class="fc">&nbsp;        this.latitude = estabelecimento.getLatitude();</b>
+<b class="fc">&nbsp;        this.longitude = estabelecimento.getLongitude();</b>
+<b class="fc">&nbsp;        this.enderecoFormatado = estabelecimento.getEnderecoFormatado();</b>
+<b class="fc">&nbsp;        this.endereco = estabelecimento.getEndereco();</b>
+<b class="fc">&nbsp;        this.classificacao = estabelecimento.getClassificacao();</b>
+<b class="fc">&nbsp;        this.conveniencias = estabelecimento.getConveniencias();</b>
+<b class="fc">&nbsp;        this.fotoUrl = estabelecimento.getFotoUrl();</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -153,7 +160,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-11-11 22:30</div>
+    <div style="float:right;">generated on 2025-11-16 15:03</div>
 </div>
 </body>
 </html>
