@@ -5,7 +5,9 @@ import com.eti.qualaboa.cupom.model.Cupom;
 import com.eti.qualaboa.cupom.repository.CupomRepository;
 import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
+import com.eti.qualaboa.notification.event.CupomCriadoEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ public class CupomService {
 
     private final CupomRepository cupomRepository;
     private final EstabelecimentoRepository estabelecimentoRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public List<CupomDTO> listarTodos() {
         return cupomRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
@@ -49,7 +52,7 @@ public class CupomService {
                 .ativo(true)
                 .estabelecimento(estabelecimento)
                 .build();
-
+        applicationEventPublisher.publishEvent(new CupomCriadoEvent(cupom));
         return toDTO(cupomRepository.save(cupom));
     }
 
