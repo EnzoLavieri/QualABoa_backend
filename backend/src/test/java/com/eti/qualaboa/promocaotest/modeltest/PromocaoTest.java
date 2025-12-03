@@ -60,7 +60,8 @@ public class PromocaoTest {
                     "spring.datasource.url=" + postgresContainer.getJdbcUrl(),
                     "spring.datasource.username=" + postgresContainer.getUsername(),
                     "spring.datasource.password=" + postgresContainer.getPassword(),
-                    "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect"
+                    // Esta linha força o Hibernate a criar as tabelas no container
+                    "spring.jpa.hibernate.ddl-auto=create-drop"
             );
         }
     }

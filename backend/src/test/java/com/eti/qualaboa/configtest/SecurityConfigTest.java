@@ -1,5 +1,7 @@
 package com.eti.qualaboa.configtest;
 
+import com.eti.qualaboa.comunidade.repository.ComunidadeRepository;
+import com.eti.qualaboa.comunidade.service.ComunidadeService;
 import com.eti.qualaboa.config.SecurityConfig;
 import com.eti.qualaboa.cupom.service.CupomService;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
@@ -46,7 +48,6 @@ public class SecurityConfigTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
     @MockBean
     private UsuarioService usuarioService;
     @MockBean
@@ -59,6 +60,13 @@ public class SecurityConfigTest {
     private CupomService cupomService;
     @MockBean
     private MapService mapService;
+
+    // Mocks adicionados para corrigir o erro do ComunidadeController
+    @MockBean
+    private ComunidadeService comunidadeService;
+    @MockBean
+    private ComunidadeRepository comunidadeRepository;
+
     @MockBean
     private UsuarioRepository usuarioRepository;
     @MockBean
