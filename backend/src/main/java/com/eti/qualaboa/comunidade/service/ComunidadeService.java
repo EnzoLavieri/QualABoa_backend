@@ -3,6 +3,7 @@ package com.eti.qualaboa.comunidade.service;
 import com.eti.qualaboa.comunidade.domain.entity.*;
 import com.eti.qualaboa.comunidade.domain.enums.TipoPostagem;
 import com.eti.qualaboa.comunidade.domain.enums.TipoReacao;
+import com.eti.qualaboa.comunidade.dto.ComunidadeResponseDTO;
 import com.eti.qualaboa.comunidade.dto.CriarPostagemDTO;
 import com.eti.qualaboa.comunidade.dto.PostagemResponseDTO;
 import com.eti.qualaboa.comunidade.repository.*;
@@ -46,17 +47,6 @@ public class ComunidadeService {
     }
 
     @Transactional
-    public void entrarComunidade(Long comunidadeId, Long usuarioId) {
-        Comunidade com = comunidadeRepository.findById(comunidadeId)
-                .orElseThrow(() -> new RuntimeException("Comunidade não encontrada"));
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        com.getMembros().add(usuario);
-        comunidadeRepository.save(com);
-    }
-
-    @Transactional
     public void entrarComunidadePorEstabelecimento(Long estabelecimentoId, Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -68,8 +58,22 @@ public class ComunidadeService {
                     return criarComunidade(est);
                 });
 
-        com.getMembros().add(usuario);
-        comunidadeRepository.save(com);
+        if (!com.getMembros().contains(usuario)) {
+            com.getMembros().add(usuario);
+            comunidadeRepository.save(com);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<ComunidadeResponseDTO> listarMinhasComunidades(Long usuarioId) {
+        if (!usuarioRepository.existsById(usuarioId)) {
+            return java.util.Collections.emptyList();
+        }
+
+        return comunidadeRepository.findByMembrosId(usuarioId)
+                .stream()
+                .map(com.eti.qualaboa.comunidade.dto.ComunidadeResponseDTO::new)
+                .toList();
     }
 
     @Transactional
@@ -133,15 +137,14 @@ public class ComunidadeService {
         opcaoEnqueteRepository.save(opcao);
     }
 
-    @Transactional(readOnly = true)
-    public java.util.List<com.eti.qualaboa.comunidade.dto.ComunidadeResponseDTO> listarMinhasComunidades(Long usuarioId) {
-        if (!usuarioRepository.existsById(usuarioId)) {
-            throw new RuntimeException("Usuário não encontrado");
-        }
+    @Transactional
+    public void entrarComunidade(Long comunidadeId, Long usuarioId) {
+        Comunidade com = comunidadeRepository.findById(comunidadeId)
+                .orElseThrow(() -> new RuntimeException("Comunidade não encontrada"));
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        return comunidadeRepository.findByMembrosId(usuarioId)
-                .stream()
-                .map(com.eti.qualaboa.comunidade.dto.ComunidadeResponseDTO::new)
-                .toList();
+        com.getMembros().add(usuario);
+        comunidadeRepository.save(com);
     }
 }

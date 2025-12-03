@@ -1,9 +1,13 @@
 package com.eti.qualaboa.comunidade.dto;
 
 import com.eti.qualaboa.comunidade.domain.entity.Postagem;
+import com.eti.qualaboa.comunidade.domain.entity.Reacao;
 import com.eti.qualaboa.comunidade.domain.enums.TipoPostagem;
+import com.eti.qualaboa.comunidade.domain.enums.TipoReacao;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public record PostagemResponseDTO(
@@ -13,7 +17,8 @@ public record PostagemResponseDTO(
         LocalDateTime dataHora,
         TipoPostagem tipo,
         List<OpcaoResponseDTO> opcoes,
-        int totalReacoes
+        int totalReacoes,
+        Map<TipoReacao, Long> reacoesDetalhadas
 ) {
     public PostagemResponseDTO(Postagem p) {
         this(
@@ -23,7 +28,9 @@ public record PostagemResponseDTO(
                 p.getDataHora(),
                 p.getTipo(),
                 p.getOpcoesEnquete().stream().map(OpcaoResponseDTO::new).collect(Collectors.toList()),
-                p.getReacoes().size()
+                p.getReacoes().size(),
+                p.getReacoes().stream()
+                        .collect(Collectors.groupingBy(Reacao::getTipo, Collectors.counting()))
         );
     }
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface ComunidadeRepository extends JpaRepository<Comunidade, Long> {
+
     Optional<Comunidade> findByDonoIdEstabelecimento(Long idEstabelecimento);
 
     @Query("SELECT c FROM Comunidade c JOIN c.membros m WHERE m.id = :usuarioId")

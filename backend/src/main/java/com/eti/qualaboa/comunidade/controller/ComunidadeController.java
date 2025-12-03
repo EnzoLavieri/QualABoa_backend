@@ -1,8 +1,11 @@
 package com.eti.qualaboa.comunidade.controller;
 
+import com.eti.qualaboa.comunidade.domain.entity.Comunidade;
 import com.eti.qualaboa.comunidade.domain.enums.TipoReacao;
+import com.eti.qualaboa.comunidade.dto.ComunidadeResponseDTO;
 import com.eti.qualaboa.comunidade.dto.CriarPostagemDTO;
 import com.eti.qualaboa.comunidade.dto.PostagemResponseDTO;
+import com.eti.qualaboa.comunidade.repository.ComunidadeRepository;
 import com.eti.qualaboa.comunidade.service.ComunidadeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class ComunidadeController {
 
     private final ComunidadeService comunidadeService;
+    private final ComunidadeRepository comunidadeRepository;
 
     @PostMapping("/{id}/entrar")
     public ResponseEntity<Void> entrar(@PathVariable Long id, @RequestParam Long usuarioId) {
@@ -28,6 +32,14 @@ public class ComunidadeController {
     public ResponseEntity<Void> entrarPorEstabelecimento(@PathVariable Long estabId, @RequestParam Long usuarioId) {
         comunidadeService.entrarComunidadePorEstabelecimento(estabId, usuarioId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/estabelecimento/{estabId}")
+    public ResponseEntity<ComunidadeResponseDTO> buscarPorEstabelecimento(@PathVariable Long estabId) {
+        return comunidadeRepository.findByDonoIdEstabelecimento(estabId)
+                .map(ComunidadeResponseDTO::new)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/postagens")

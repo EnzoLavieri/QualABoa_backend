@@ -1,5 +1,6 @@
 package com.eti.qualaboa.estabelecimento.service;
 
+import com.eti.qualaboa.comunidade.service.ComunidadeService;
 import com.eti.qualaboa.cupom.dto.CupomDTO;
 import com.eti.qualaboa.cupom.model.Cupom;
 import com.eti.qualaboa.endereco.Endereco;
@@ -10,19 +11,18 @@ import com.eti.qualaboa.estabelecimento.model.Estabelecimento;
 import com.eti.qualaboa.estabelecimento.repository.EstabelecimentoRepository;
 import com.eti.qualaboa.metricas.dto.CliquesPorDiaDTO;
 import com.eti.qualaboa.metricas.dto.RelatorioCliquesDTO;
-import com.eti.qualaboa.metricas.model.Metricas;
 import com.eti.qualaboa.metricas.repository.LogBuscaPeloNomeRepository;
 import com.eti.qualaboa.metricas.repository.LogCliqueRepository;
 import com.eti.qualaboa.metricas.repository.LogFavoritosRepository;
 import com.eti.qualaboa.metricas.service.MetricasService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.eti.qualaboa.map.places.PlacesClient;
 import com.eti.qualaboa.usuario.domain.entity.Role;
 import com.eti.qualaboa.usuario.repository.RoleRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.eti.qualaboa.map.places.PlacesClient;
 
 import java.text.Normalizer;
 import java.util.List;
@@ -44,9 +44,20 @@ public class EstabelecimentoService {
     private final LogCliqueRepository logCliqueRepository;
     private final LogFavoritosRepository logFavoritosRepository;
     private final LogBuscaPeloNomeRepository logBuscaPeloNomeRepository;
+    private final ComunidadeService comunidadeService;
 
-    public EstabelecimentoService(EstabelecimentoRepository repositoryEstabelecimento, PlacesClient placesClient, JdbcTemplate jdbcTemplate, RoleRepository roleRepository,
-                                  BCryptPasswordEncoder passwordEncoder, MetricasService metricasService, LogCliqueRepository logCliqueRepository, LogFavoritosRepository logFavoritosRepository, LogFavoritosRepository logFavoritosRepository1, LogBuscaPeloNomeRepository logBuscaPeloNomeRepository) {
+    public EstabelecimentoService(
+            EstabelecimentoRepository repositoryEstabelecimento,
+            PlacesClient placesClient,
+            JdbcTemplate jdbcTemplate,
+            RoleRepository roleRepository,
+            BCryptPasswordEncoder passwordEncoder,
+            MetricasService metricasService,
+            LogCliqueRepository logCliqueRepository,
+            LogFavoritosRepository logFavoritosRepository,
+            LogBuscaPeloNomeRepository logBuscaPeloNomeRepository,
+            ComunidadeService comunidadeService
+    ) {
         this.repositoryEstabelecimento = repositoryEstabelecimento;
         this.placesClient = placesClient;
         this.jdbcTemplate = jdbcTemplate;
@@ -54,8 +65,9 @@ public class EstabelecimentoService {
         this.passwordEncoder = passwordEncoder;
         this.metricasService = metricasService;
         this.logCliqueRepository = logCliqueRepository;
-        this.logFavoritosRepository = logFavoritosRepository1;
+        this.logFavoritosRepository = logFavoritosRepository;
         this.logBuscaPeloNomeRepository = logBuscaPeloNomeRepository;
+        this.comunidadeService = comunidadeService;
     }
 
     public EstabelecimentoResponseDTO criar(EstabelecimentoRegisterDTO estabelecimentoRequest) {
@@ -90,6 +102,12 @@ public class EstabelecimentoService {
 
         Estabelecimento salvo = repositoryEstabelecimento.save(estabelecimento);
 
+        try {
+            comunidadeService.criarComunidade(salvo);
+        } catch (Exception e) {
+            log.error("Falha ao criar comunidade para Estabelecimento {}: {}", salvo.getNome(), e.getMessage());
+        }
+
         jdbcTemplate.execute("""
                     ALTER TABLE estabelecimentos ADD COLUMN IF NOT EXISTS geom geography(Point,4326);
                 """);
@@ -119,18 +137,12 @@ public class EstabelecimentoService {
                 salvo.getConveniencias());
     }
 
-    /**
-     * Lista todos os estabelecimentos cadastrados (parceiros).
-     */
     public List<EstabelecimentoDTO> listarTodos() {
         return repositoryEstabelecimento.findAll()
                 .stream().map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Busca um estabelecimento pelo ID e conta os cliques.
-     */
     public Estabelecimento buscarPorId(Long id) {
         Estabelecimento estabelecimento = repositoryEstabelecimento.findById(id).orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
         metricasService.registrarClique(id);
@@ -151,9 +163,7 @@ public class EstabelecimentoService {
         return estabelecimento;
     }
 
-    /**
-     * Atualiza as informações de um estabelecimento existente.
-     */
+
     public EstabelecimentoDTO atualizar(Long id, Estabelecimento dto) {
         Estabelecimento existente = repositoryEstabelecimento.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estabelecimento não encontrado"));
@@ -171,7 +181,6 @@ public class EstabelecimentoService {
         existente.setEnderecoFormatado(dto.getEnderecoFormatado());
         existente.setFotoUrl(dto.getFotoUrl());
 
-        // Atualiza ou cria o endereço
         if (dto.getEndereco() != null) {
             Endereco end = existente.getEndereco();
             if (end == null) {
@@ -189,12 +198,17 @@ public class EstabelecimentoService {
         }
 
         Estabelecimento atualizado = repositoryEstabelecimento.save(existente);
+
+        try {
+            comunidadeService.criarComunidade(atualizado);
+        } catch (Exception e) {
+            log.warn("Falha ao criar/atualizar comunidade após update: {}", e.getMessage());
+        }
+
         return toDTO(atualizado);
     }
 
-    /**
-     * Exclui um estabelecimento pelo ID.
-     */
+
     public void deletar(Long id) {
         repositoryEstabelecimento.deleteById(id);
     }
@@ -218,7 +232,14 @@ public class EstabelecimentoService {
         }
 
         est.setParceiro(true);
-        repositoryEstabelecimento.save(est);
+        Estabelecimento salvo = repositoryEstabelecimento.save(est);
+
+        try {
+            comunidadeService.criarComunidade(salvo);
+        } catch (Exception e) {
+            log.warn("Falha ao criar comunidade no vincularComPlace: {}", e.getMessage());
+        }
+
         return toDTO(est);
     }
 
