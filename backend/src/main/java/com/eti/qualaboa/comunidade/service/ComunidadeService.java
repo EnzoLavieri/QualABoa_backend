@@ -81,10 +81,6 @@ public class ComunidadeService {
         Comunidade com = comunidadeRepository.findById(comunidadeId)
                 .orElseThrow(() -> new RuntimeException("Comunidade não encontrada"));
 
-        if (!com.getDono().getIdEstabelecimento().equals(estabelecimentoId)) {
-            throw new RuntimeException("Acesso negado: Apenas o dono pode postar.");
-        }
-
         Postagem post = new Postagem();
         post.setComunidade(com);
         post.setConteudoTexto(dto.conteudoTexto());
